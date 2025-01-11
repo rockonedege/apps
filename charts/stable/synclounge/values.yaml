@@ -1,26 +1,29 @@
 image:
-  repository: tccr.io/truecharts/synclounge
+  repository: ghcr.io/linuxserver/synclounge
   pullPolicy: IfNotPresent
-  tag: v5.1.112
-
-securityContext:
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-  AUTH_LIST: ""
-
+  tag: 5.2.35@sha256:24d505157767fc7a99f39b8f0475d93ce2852c263805ed6ad7b1795eae15ec58
 service:
   main:
     ports:
       main:
         targetPort: 8088
         port: 8088
-
 persistence:
   varrun:
     enabled: true
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            AUTH_LIST: ""

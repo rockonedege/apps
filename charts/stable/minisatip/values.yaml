@@ -1,18 +1,7 @@
 image:
-  repository: tccr.io/truecharts/minisatip
+  repository: ghcr.io/linuxserver/minisatip
   pullPolicy: IfNotPresent
-  tag: v2021.12.01
-
-securityContext:
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-
+  tag: 2021.12.01@sha256:d252018c680acedebb91a7b5cc87c2c3d74bb1ee0323b57f5a322b9f40a5969b
 service:
   main:
     ports:
@@ -31,13 +20,21 @@ service:
     ports:
       discovery:
         enabled: true
-        protocol: UDP
+        protocol: udp
         targetPort: 1900
         port: 1900
-
 persistence:
   config:
     enabled: true
     mountPath: "/config"
   varrun:
     enabled: true
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0

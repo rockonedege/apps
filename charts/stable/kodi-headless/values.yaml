@@ -1,18 +1,7 @@
 image:
-  repository: tccr.io/truecharts/kodi-headless
+  repository: lscr.io/linuxserver/kodi-headless
   pullPolicy: IfNotPresent
-  tag: v190
-
-securityContext:
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-
+  tag: 190@sha256:b3180a9a7cd7066b80d14bade1ccba5457ca7a4dc242c0ba7e93459ae1ebcf28
 service:
   main:
     ports:
@@ -31,13 +20,33 @@ service:
     ports:
       esall:
         enabled: true
-        protocol: UDP
+        protocol: udp
         targetPort: 9777
         port: 9777
-
 persistence:
   config:
     enabled: true
     mountPath: "/config/.kodi"
   varrun:
     enabled: true
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: tcp
+            readiness:
+              type: tcp
+            startup:
+              type: tcp

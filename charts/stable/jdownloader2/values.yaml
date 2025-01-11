@@ -1,16 +1,7 @@
 image:
-  repository: tccr.io/truecharts/jdownloader-2
+  repository: docker.io/jlesage/jdownloader-2
   pullPolicy: IfNotPresent
-  tag: v1.7.1@sha256:ba37e3a795f6e64466de3e81152af78c5fe8f6c3beeeee5a2bc948c41a631b16
-
-securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  tag: v24.12.1@sha256:2baf2b606d2cd4572ffde15ca42e914a0b196f6da3c48e9462e3ecd3beaab077
 service:
   main:
     ports:
@@ -31,22 +22,64 @@ service:
         enabled: true
         port: 10056
         targetPort: 5900
-
-secret:
-  VNC_PASSWORD: ""
-env:
-  # Permissions Settings
-  PUID: 568
-  USER_ID: "{{ .Values.env.PUID }}"
+ingress:
+  main:
+    integrations:
+      homepage:
+        widget:
+          type: jdownloader
+jdownloader:
   # General Settings
-  KEEP_APP_RUNNING: 0
-  CLEAN_TMP_DIR: 1
+  KEEP_APP_RUNNING: false
   # GUI Settings
   DISPLAY_WIDTH: 1280
   DISPLAY_HEIGHT: 768
-  SECURE_CONNECTION: 0
-
+  SECURE_CONNECTION: false
+  ENABLE_CJK_FONT: false
+configmap:
+  jdownloader:
+    enabled: true
+    data:
+      ENABLE_CJK_FONT: '{{ ternary "1" "0" .Values.jdownloader.ENABLE_CJK_FONT }}'
+      KEEP_APP_RUNNING: '{{ ternary "1" "0" .Values.jdownloader.KEEP_APP_RUNNING }}'
+      SECURE_CONNECTION: '{{ ternary "1" "0" .Values.jdownloader.SECURE_CONNECTION }}'
+      DISPLAY_WIDTH: "{{ .Values.jdownloader.DISPLAY_WIDTH }}"
+      DISPLAY_HEIGHT: "{{ .Values.jdownloader.DISPLAY_HEIGHT }}"
 persistence:
   config:
     enabled: true
     mountPath: "/config"
+  output:
+    enabled: true
+    mountPath: "/output"
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          securityContext:
+            capabilities:
+              add:
+                - NET_BIND_SERVICE
+                - KILL
+          probes:
+            liveness:
+              type: tcp
+            readiness:
+              type: tcp
+            startup:
+              type: tcp
+          env:
+            VNC_PASSWORD: ""
+          envFrom:
+            - configMapRef:
+                name: "jdownloader"

@@ -1,26 +1,13 @@
 image:
-  repository: tccr.io/truecharts/organizr
+  repository: docker.io/organizr/organizr
   pullPolicy: Always
-  tag: latest@sha256:ca1794e822f705b63c5753d56c7eecfd23e1ae77ddffb5a66b13c2ec7f587ad3
-
-securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  tag: latest@sha256:1ce319d73cdfd2666ec7ef21e15907531fabc8a6f333c4ac61e2b2e9d2d162f5
 service:
   main:
     ports:
       main:
         port: 10022
         targetPort: 80
-
-env: {}
-  # TZ: UTC
-  # PUID: 1001
 persistence:
   config:
     enabled: true
@@ -28,3 +15,12 @@ persistence:
   data:
     enabled: true
     mountPath: "/data"
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0

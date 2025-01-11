@@ -1,29 +1,23 @@
 image:
-  repository: tccr.io/truecharts/digikam
+  repository: ghcr.io/linuxserver/digikam
   pullPolicy: IfNotPresent
-  tag: version-7.3.0@sha256:97cc7525c0e77c75933eea57f2aa52b76077837971a7866338d79ea93adb069c
-
-env:
-  PUID: 568
-
+  tag: 8.5.0@sha256:7f4fd8a00bf22c56acb75c5f0b7857d0b39fc0381234586c94dcb1461687a0c2
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         port: 10033
         targetPort: 3000
-
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
-  varrun:
+    mountPath: /config
+portal:
+  open:
     enabled: true

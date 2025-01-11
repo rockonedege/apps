@@ -1,31 +1,31 @@
 image:
-  repository: tccr.io/truecharts/heimdall
-  tag: version-2.2.2@sha256:eedb3180caf7388b206238120405d53baf9783692b14766ffed7bb388fadd6ce
+  repository: lscr.io/linuxserver/heimdall
+  tag: 2.6.3@sha256:6828c56bd129606aed0222b841f426afed1d81f1117f570dc1ea775787d2566c
   pullPolicy: IfNotPresent
-
-securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
 service:
   main:
     ports:
       main:
         port: 10014
         targetPort: 80
-
-env: {}
-  # TZ:
-  # PUID:
-probes:
-  startup:
-    enabled: true
-
 persistence:
   config:
     enabled: true
     mountPath: "/config"
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            startup:
+              enabled: true

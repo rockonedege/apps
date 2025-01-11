@@ -1,13 +1,15 @@
 {{/*
-Template to render netshoot addon
+Template to render code-server addon
 It will include / inject the required templates based on the given values.
 */}}
-{{- define "common.addon.netshoot" -}}
+{{- define "tc.v1.common.addon.netshoot" -}}
+{{- $targetSelector := "main" -}}
 {{- if .Values.addons.netshoot.enabled -}}
-  {{/* Append the netshoot container to the additionalContainers */}}
-  {{- $container := include "common.addon.netshoot.container" . | fromYaml -}}
+  {{/* Append the code-server container to the workloads */}}
+  {{- $container := include "tc.v1.common.addon.netshoot.container" . | fromYaml -}}
   {{- if $container -}}
-    {{- $_ := set .Values.additionalContainers "addon-netshoot" $container -}}
+    {{- $workload := get $.Values.workload $targetSelector -}}
+    {{- $_ := set $workload.podSpec.containers "netshoot" $container -}}
   {{- end -}}
 {{- end -}}
 {{- end -}}

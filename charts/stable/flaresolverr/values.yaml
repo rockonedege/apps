@@ -1,34 +1,37 @@
 image:
-  # -- image repository
-  repository: tccr.io/truecharts/flaresolverr
-  # -- image pull policy
+  repository: ghcr.io/flaresolverr/flaresolverr
   pullPolicy: IfNotPresent
-  # -- image tag
-  tag: v2.2.1@sha256:de719161a96db4901f6fc7e3bd29ae1c424a66d40676b59653af267eaf254cfd
-
+  tag: v3.3.21@sha256:f104ee51e5124d83cf3be9b37480649355d223f7d8f9e453d0d5ef06c6e3b31b
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-# -- environment variables. See more environment variables in the [flaresolverr documentation](https://github.com/FlareSolverr/FlareSolverr#environment-variables).
-# @default -- See below
-env:
-  # -- Set the container timezone
-  TZ: UTC
-
-# -- Configures service settings for the chart.
-# @default -- See values.yaml
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         port: 8191
-        targetPort: 8191
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            PORT: "{{ .Values.service.main.ports.main.port }}"
+            HOST: "0.0.0.0"
+            TEST_URL: "https://www.google.com"
+            BROWSER_TIMEOUT: 40000
+            HEADLESS: true
+            LOG_LEVEL: info
+            LOG_HTML: false
+            # At this time none of the captcha solvers work, defaults to none.
+            CAPTCHA_SOLVER: none
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
+    mountPath: /config
+portal:
+  open:
+    enabled: false

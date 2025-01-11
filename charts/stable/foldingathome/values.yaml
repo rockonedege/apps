@@ -1,18 +1,29 @@
 image:
-  repository: tccr.io/truecharts/foldingathome
+  repository: ghcr.io/linuxserver/foldingathome
   pullPolicy: IfNotPresent
-  tag: v7.6.21
-
+  tag: 8.3.18@sha256:a11530655be018bc43c9f973bce2a59344f2d140a9e5c843305f765299a5d141
 securityContext:
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
+          env: {}
 service:
   main:
     ports:
@@ -26,10 +37,12 @@ service:
         enabled: true
         targetPort: 36330
         port: 36330
-
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
+    mountPath: /config
   varrun:
+    enabled: true
+portal:
+  open:
     enabled: true

@@ -1,31 +1,15 @@
 image:
-  repository: tccr.io/truecharts/anonaddy
-  tag: v0.9.1@sha256:cfab6686d26822a0bde3c7f016409c6248f5e971f60a8ad9edca5954fd6e2ae0
+  repository: docker.io/anonaddy/anonaddy
+  tag: 1.3.0@sha256:175009451e1585f2a4979b8761e2d65867165bdfa2817790693a19298bfd2c37
   pullPolicy: IfNotPresent
-
 strategy:
   type: Recreate
-
 securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-# -- environment variables. See more environment variables in the [anonaddy documentation](https://github.com/anonaddy/docker#environment-variables).
-# @default -- See below
-env:
-  PUID: 568
-  # -- Root domain to receive email from
-  ANONADDY_DOMAIN: chart-example.local
-  DB_DATABASE: anonaddy
-  DB_USERNAME: anonaddy
-
-# -- Configures service settings for the chart.
-# @default -- See values.yaml
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
@@ -39,49 +23,66 @@ service:
         enabled: true
         port: 25
         targetPort: 25
-
-# -- Configure persistence settings for the chart under this key.
-# @default -- See values.yaml
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: tcp
+            readiness:
+              type: tcp
+            startup:
+              type: tcp
+          env:
+            ANONADDY_DOMAIN: "chart-example.local"
+            APP_URL: "http://localhost:10110"
+            # The from name to be used for outgoing email notifications from AnonAddy
+            MAIL_FROM_NAME: Example
+            # The from address to be used for outgoing email notifications from AnonAddy
+            MAIL_FROM_ADDRESS: mailer@example.com
+            # just smtp is configurable
+            MAIL_DRIVER: smtp
+            MAIL_HOST: mail.example.com
+            MAIL_PORT: 25
+            MAIL_ENCRYPTION: tls
+            MAIL_EHLO_DOMAIN: mail.example.com
+            MAIL_VERIFY_PEER: false
+            DB_DATABASE: "{{ .Values.mariadb.mariadbDatabase }}"
+            DB_USERNAME: "{{ .Values.mariadb.mariadbUsername }}"
+            DB_HOST:
+              secretKeyRef:
+                expandObjectName: false
+                name: '{{ printf "%s-%s" .Release.Name "mariadbcreds" }}'
+                key: plainhost
+            DB_PASSWORD: "{{ .Values.mariadb.password }}"
+            REDIS_HOST:
+              secretKeyRef:
+                expandObjectName: false
+                name: '{{ printf "%s-%s" .Release.Name "rediscreds" }}'
+                key: plainhost
+            REDIS_PASSWORD: "{{ .Values.redis.password }}"
+            APP_KEY:
+              secretKeyRef:
+                name: anonaddy-secrets
+                key: APP_KEY
+            ANONADDY_SECRET:
+              secretKeyRef:
+                name: anonaddy-secrets
+                key: ANONADDY_SECRET
 persistence:
-  varrun:
-    enabled: true
   config:
     enabled: true
-    mountPath: "/config"
-
-envValueFrom:
-  DB_HOST:
-    secretKeyRef:
-      name: mariadbcreds
-      key: plainhost
-  DB_PASSWORD:
-    secretKeyRef:
-      name: mariadbcreds
-      key: mariadb-password
-  REDIS_HOST:
-    secretKeyRef:
-      name: rediscreds
-      key: plainhost
-  REDIS_PASSWORD:
-    secretKeyRef:
-      name: rediscreds
-      key: redis-password
-  APP_KEY:
-    secretKeyRef:
-      name: appkey
-      key: appkey
-  ANONADDY_SECRET:
-    secretKeyRef:
-      name: appkey
-      key: secret
-
-
+    mountPath: /config
 redis:
   enabled: true
-  existingSecret: "rediscreds"
-
+  includeCommon: true
 mariadb:
   enabled: true
+  includeCommon: true
   mariadbUsername: anonaddy
   mariadbDatabase: anonaddy
-  existingSecret: "mariadbcreds"
+portal:
+  open:
+    enabled: true
