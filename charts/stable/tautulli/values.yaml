@@ -1,19 +1,30 @@
 image:
-  repository: tccr.io/truecharts/tautulli
+  repository: ghcr.io/tautulli/tautulli
   pullPolicy: IfNotPresent
-  tag: v2.9.3@sha256:07b36547a2dbb157be3b104100f2799f48e74aa84d9ffbfcc3749e7f410f9097
-
+  tag: v2.15.1@sha256:7755360de25d5b60aaf67a0aa4f1f71fb4fc12a1a668bb9ced09e9f4ab5239cd
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          command:
+            - python
+            - Tautulli.py
+          args:
+            - --config
+            - /config/config.ini
+            - --datadir
+            - /config
 service:
   main:
     ports:
       main:
         port: 8181
         targetPort: 8181
-
-env: {}
-  # TZ: UTC
-  # PUID: 1001
 persistence:
   config:
     enabled: true
     mountPath: "/config"
+portal:
+  open:
+    enabled: true

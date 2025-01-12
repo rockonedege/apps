@@ -1,8 +1,7 @@
 image:
-  repository: tccr.io/truecharts/podgrab
+  repository: docker.io/akhilrex/podgrab
   pullPolicy: Always
-  tag: v1.0.0@sha256:e627ad27a64c5c328fc68f302002a9c3134a4c6b328e14ac9c4b946ff0ad8acf
-
+  tag: 1.0.0@sha256:bce133f3f5111381f63d9341313fa7ce7e16209068e8a06e6db2c4ed33972b87
 service:
   main:
     ports:
@@ -16,25 +15,25 @@ service:
         enabled: true
         port: 51080
         targetPort: 51080
-
-secret:
-  PASSWORD: "secretpasswordgoeshere"
-
-env:
-  CHECK_FREQUENCY: 240
-
 persistence:
   config:
     enabled: true
     mountPath: "/config"
-
-
-probes:
-  liveness:
-    enabled: false
-
-  readiness:
-    enabled: false
-
-  startup:
-    enabled: false
+portal:
+  open:
+    enabled: true
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+            CHECK_FREQUENCY: 240
+            PASSWORD: "secretpasswordgoeshere"

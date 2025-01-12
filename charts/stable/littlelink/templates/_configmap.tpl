@@ -1,13 +1,9 @@
 {{/* Define the configmap */}}
 {{- define "littlelink.configmap" -}}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: littlelinkconfig
+enabled: true
 data:
   {{- if .Values.littlelink.meta_title }}
-  META_TILE: {{ .Values.littlelink.meta_title | quote }}
+  META_TITLE: {{ .Values.littlelink.meta_title | quote }}
   {{- end }}
   {{- if .Values.littlelink.meta_description }}
   META_DESCRIPTION: {{ .Values.littlelink.meta_description | quote }}

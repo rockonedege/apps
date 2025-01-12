@@ -1,49 +1,44 @@
 image:
-  # -- image repository
-  repository: tccr.io/truecharts/airsonic
-  # -- image tag
-  tag: version-v10.6.2@sha256:f0065aa44fb1c38b7fc30d34e220138dc0a0c6477b78eb7f59015622c2052030
-  # -- image pull policy
+  repository: ghcr.io/linuxserver/airsonic
+  tag: version-v10.6.2@sha256:8b42de38222839c0ff8914479853cfd5e4a8160d81c9a9ef6e9896be6629bf29
   pullPolicy: IfNotPresent
-
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-# -- environment variables. See [image docs](https://docs.linuxserver.io/images/docker-airsonic#environment-variables-e) for more details.
-# @default -- See below
-env:
-  # -- Set the container timezone
-  TZ: UTC
-  # -- Specify the user ID the application will run as
-  PUID: 568
-  # -- Used to set the base path for reverse proxies eg. /booksonic, /books, etc.
-  CONTEXT_PATH:  # "url-base"
-  # -- For passing additional java options. For some reverse proxies, you may need to pass `JAVA_OPTS=-Dserver.use-forward-headers=true` for airsonic to generate the proper URL schemes.
-  JAVA_OPTS:
-
-# -- Configures service settings for the chart. Normally this does not need to be modified.
-# @default -- See values.yaml
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
+          env: {}
+          # -- sets the context path parameter
+          # Example: "url-base"
+          # CONTEXT_PATH:
+          # JAVA_OPTS:
 service:
   main:
     ports:
       main:
         port: 10047
+        protocol: http
         targetPort: 4040
-
-ingress:
-  # -- Enable and configure ingress settings for the chart under this key.
-  # @default -- See values.yaml
-  main:
-    enabled: false
-
-# -- Configure persistence settings for the chart under this key.
-# @default -- See values.yaml
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
+    mountPath: /config
+portal:
+  open:
+    enabled: true

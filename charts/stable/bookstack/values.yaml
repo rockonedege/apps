@@ -1,53 +1,48 @@
 image:
-  repository: tccr.io/truecharts/bookstack
+  repository: ghcr.io/linuxserver/bookstack
   pullPolicy: IfNotPresent
-  tag: v21.12.20211223@sha256:d9109310a132a483b095de095ec09c738fbba8d91106f041b6e136336af2332f
-
-# -- environment variables. See more environment variables in the [bookstack documentation](https://hub.docker.com/r/linuxserver/bookstack)
-# @default -- See below
-env:
-  DB_USER: bookstack
-  DB_DATABASE: bookstack
-  PUID: 568
-
+  tag: 24.12.20241223@sha256:d1c7c9ac3badb98582b75846db3cccb29b65dafbda2f68a33758032d7a0555b2
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-# -- Configures service settings for the chart.
-# @default -- See values.yaml
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         port: 10112
+        protocol: http
         targetPort: 80
-
-# -- Configure persistence settings for the chart under this key.
-# @default -- See values.yaml
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            DB_USERNAME: "{{ .Values.mariadb.mariadbUsername }}"
+            DB_DATABASE: "{{ .Values.mariadb.mariadbDatabase }}"
+            APP_URL: ""
+            DB_HOST:
+              secretKeyRef:
+                expandObjectName: false
+                name: '{{ printf "%s-%s" .Release.Name "mariadbcreds" }}'
+                key: plainhost
+            DB_PASSWORD: "{{ .Values.mariadb.password }}"
+            APP_KEY:
+              secretKeyRef:
+                name: secrets
+                key: APP_KEY
 persistence:
-  varrun:
-    enabled: true
   config:
     enabled: true
-    mountPath: "/config"
-
-envValueFrom:
-  DB_HOST:
-    secretKeyRef:
-      name: mariadbcreds
-      key: plainhost
-  DB_PASS:
-    secretKeyRef:
-      name: mariadbcreds
-      key: mariadb-password
-
+    mountPath: /config
 mariadb:
   enabled: true
+  includeCommon: true
   mariadbUsername: bookstack
   mariadbDatabase: bookstack
-  existingSecret: "mariadbcreds"
+portal:
+  open:
+    enabled: true

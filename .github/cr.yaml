@@ -1,8 +1,0 @@
-owner: truecharts
-git-repo: apps
-charts-dir: charts/*
-charts_repo_url: "https://truecharts.org"
-excluded-charts: common-test
-pages-branch: "master"
-SkipExisting: true
-index-path: "docs/index.yaml"

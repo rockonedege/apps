@@ -1,38 +1,7 @@
 image:
-  repository: tccr.io/truecharts/quassel-core
+  repository: ghcr.io/linuxserver/quassel-core
   pullPolicy: IfNotPresent
-  tag: v0.14.0
-
-portal:
-  enabled: false
-
-securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-  DB_BACKEND: "PostgreSQL"
-  DB_PGSQL_USERNAME: "{{ .Values.postgresql.postgresqlUsername }}"
-  DB_PGSQL_DATABASE: "{{ .Values.postgresql.postgresqlDatabase }}"
-  DB_PGSQL_PORT: 5432
-  AUTH_AUTHENTICATOR: "Database"
-  RUN_OPTS: "--config-from-environment"
-
-envValueFrom:
-  DB_PGSQL_PASSWORD:
-    secretKeyRef:
-      name: dbcreds
-      key: postgresql-password
-  DB_PGSQL_HOSTNAME:
-    secretKeyRef:
-      name: dbcreds
-      key: plainhost
-
+  tag: 0.14.0@sha256:cefb9aa752d4db099d98be5966432e9dcd298695571c8eedc84ffc298f3258e0
 service:
   main:
     ports:
@@ -46,13 +15,47 @@ service:
         enabled: true
         targetPort: 10113
         port: 10113
-
 persistence:
   varrun:
     enabled: true
-
-postgresql:
-  enabled: true
-  existingSecret: "dbcreds"
-  postgresqlUsername: quassel-core
-  postgresqlDatabase: quassel-core
+cnpg:
+  main:
+    enabled: true
+    user: quassel-core
+    database: quassel-core
+portal:
+  open:
+    enabled: false
+securityContext:
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: tcp
+            readiness:
+              type: tcp
+            startup:
+              type: tcp
+          env:
+            DB_BACKEND: "PostgreSQL"
+            DB_PGSQL_USERNAME: "{{ .Values.cnpg.main.user }}"
+            DB_PGSQL_DATABASE: "{{ .Values.cnpg.main.database }}"
+            DB_PGSQL_PORT: 5432
+            AUTH_AUTHENTICATOR: "Database"
+            RUN_OPTS: "--config-from-environment"
+            DB_PGSQL_PASSWORD:
+              secretKeyRef:
+                name: cnpg-main-user
+                key: password
+            DB_PGSQL_HOSTNAME:
+              secretKeyRef:
+                name: cnpg-main-urls
+                key: host

@@ -1,57 +1,69 @@
 image:
-  repository: tccr.io/truecharts/joplin-server
-  tag: v2.7.4@sha256:6832f3ed894279ba8a1ab03b4033d11dadc28e3f36364eed7b69eadb52f8e1e4
+  repository: docker.io/joplin/server
+  tag: 3.0.1-beta@sha256:52af57880c0e04a179107807e13ffb8868b31ea2cc86a2b04da42220facb7589
   pullPolicy: IfNotPresent
-
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  TZ: UTC
-  APP_BASE_URL: http://localhost:22300
-  APP_PORT: 22300
-  DB_CLIENT: "pg"
-  POSTGRES_DATABASE: "{{ .Values.postgresql.postgresqlDatabase }}"
-  POSTGRES_USER: "{{ .Values.postgresql.postgresqlUsername }}"
-  POSTGRES_PORT: "5432"
-
-envValueFrom:
-  POSTGRES_PASSWORD:
-    secretKeyRef:
-      name: dbcreds
-      key: postgresql-password
-  POSTGRES_HOST:
-    secretKeyRef:
-      name: dbcreds
-      key: plainhost
-
-probes:
-  liveness:
-    path: "/api/ping"
-  readiness:
-    path: "/api/ping"
-  startup:
-    path: "/api/ping"
-
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              path: "/api/ping"
+              port: "{{ .Values.service.main.ports.main.port }}"
+              httpHeaders:
+                Host: '{{ tpl .Values.workload.main.podSpec.containers.main.env.APP_BASE_URL $ | replace "https://" "" | replace "http://" "" }}'
+            readiness:
+              path: "/api/ping"
+              port: "{{ .Values.service.main.ports.main.port }}"
+              httpHeaders:
+                Host: '{{ tpl .Values.workload.main.podSpec.containers.main.env.APP_BASE_URL $ | replace "https://" "" | replace "http://" "" }}'
+            startup:
+              type: tcp
+              port: "{{ .Values.service.main.ports.main.port }}"
+          env:
+            APP_BASE_URL: ""
+            APP_PORT: "{{ .Values.service.main.ports.main.port }}"
+            DB_CLIENT: "pg"
+            POSTGRES_DATABASE: "{{ .Values.cnpg.main.database }}"
+            POSTGRES_USER: "{{ .Values.cnpg.main.user }}"
+            POSTGRES_PORT: "5432"
+            POSTGRES_PASSWORD:
+              secretKeyRef:
+                name: cnpg-main-user
+                key: password
+            POSTGRES_HOST:
+              secretKeyRef:
+                name: cnpg-main-urls
+                key: host
+            MAILER_ENABLED: 0
+            MAILER_HOST: ""
+            MAILER_PORT: 465
+            MAILER_SECURITY: tls
+            MAILER_AUTH_USER: ""
+            MAILER_AUTH_PASSWORD: ""
+            MAILER_NOREPLY_NAME: ""
+            MAILER_NOREPLY_EMAIL: ""
 service:
   main:
     ports:
       main:
         port: 22300
-        targetPort: 22300
-
 persistence:
   config:
     enabled: true
     mountPath: "/config"
-
-postgresql:
-  enabled: true
-  existingSecret: "dbcreds"
-  postgresqlUsername: joplin
-  postgresqlDatabase: joplin
+cnpg:
+  main:
+    enabled: true
+    user: joplin
+    database: joplin
+portal:
+  open:
+    enabled: true
