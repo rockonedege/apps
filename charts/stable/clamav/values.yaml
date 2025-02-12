@@ -1,56 +1,29 @@
 image:
-  repository: tccr.io/truecharts/clamav
+  repository: docker.io/clamav/clamav
   pullPolicy: IfNotPresent
-  tag: v0.104.2@sha256:7826f702c4536273f15555ab12979e358aa730eb07816139bbfda3ce5bf8d5ca
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  tag: 1.4.2@sha256:12efd8fd5fbe8446a3bc327b0b9610044de83554b949a01f9d538db117f5cba4
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
 
-probes:
-  liveness:
-    enabled: true
-    custom: true
-    spec:
-      exec:
-        command:
-          - clamdcheck.sh
-      initialDelaySeconds: 15
-      periodSeconds: 30
-      failureThreshold: 10
-      timeoutSeconds: 1
-  readiness:
-    enabled: true
-    custom: true
-    spec:
-      exec:
-        command:
-          - clamdcheck.sh
-      initialDelaySeconds: 15
-      periodSeconds: 30
-      failureThreshold: 10
-      timeoutSeconds: 1
-  startup:
-    enabled: true
-    custom: true
-    spec:
-      exec:
-        command:
-          - clamdcheck.sh
-      initialDelaySeconds: 15
-      periodSeconds: 30
-      failureThreshold: 10
-      timeoutSeconds: 1
+clamav:
+  report_path: "/logs"
+  # User Defined
 
+  cron_enabled: true
+  cron_schedule: "* * * * *"
+  date_format: "+%m-%d-%Y_%H.%M.%S"
+  log_file_name: "clamscan_report"
+  extra_args: ""
 service:
   main:
     ports:
       main:
         port: 3310
+        protocol: http
         targetPort: 3310
   milter:
     enabled: true
@@ -58,20 +31,53 @@ service:
       milter:
         enabled: true
         port: 7357
+        protocol: http
         targetPort: 7357
-
-env:
-  CLAMAV_NO_CLAMD: false
-  CLAMAV_NO_FRESHCLAMD: false
-  CLAMAV_NO_MILTERD: true
-  CLAMD_STARTUP_TIMEOUT: 1800
-  FRESHCLAM_CHECKS: 1
-
+cronjob:
+  annotations: {}
+  failedJobsHistoryLimit: 5
+  successfulJobsHistoryLimit: 2
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: true
+              type: exec
+              command:
+                - clamdcheck.sh
+            readiness:
+              enabled: true
+              type: exec
+              command:
+                - clamdcheck.sh
+            startup:
+              enabled: true
+              type: exec
+              command:
+                - clamdcheck.sh
+          env:
+            CLAMAV_NO_CLAMD: false
+            CLAMAV_NO_FRESHCLAMD: false
+            CLAMAV_NO_MILTERD: true
+            CLAMD_STARTUP_TIMEOUT: 1800
+            FRESHCLAM_CHECKS: 1
 persistence:
   sigdatabase:
     enabled: true
-    mountPath: "/var/lib/clamav"
+    mountPath: /var/lib/clamav
+    targetSelectAll: true
   scandir:
     enabled: true
-    mountPath: "/scandir"
+    mountPath: /scandir
     readOnly: true
+    targetSelectAll: true
+  logs:
+    enabled: true
+    mountPath: /logs
+    targetSelectAll: true
+portal:
+  open:
+    enabled: false

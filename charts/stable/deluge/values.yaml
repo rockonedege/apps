@@ -1,41 +1,57 @@
 image:
-  repository: tccr.io/truecharts/deluge
+  repository: ghcr.io/linuxserver/deluge
   pullPolicy: IfNotPresent
-  tag: version-2.0.3-2201906121747ubuntu18.04.1@sha256:ef71fa2986593ad6fe3d2c3f277f0340c28c0fbcdc8b91c3505b83be71784f08
-
+  tag: version-2.1.1-r6@sha256:026d9007c2583f6e25a8467c58f870c04df29ca9f788b809b6d59d20ae4b2199
 securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         port: 8112
         targetPort: 8112
+  rpc:
+    enabled: true
+    ports:
+      rpc:
+        enabled: true
+        port: 58846
+        targetPort: 58846
   torrent:
     enabled: true
     ports:
       tcp:
         enabled: true
-        port: 51413
-        targetPort: 51413
-  torrent-udp:
-    enabled: true
-    ports:
+        port: 6881
+        targetPort: 6881
       udp:
         enabled: true
-        port: 51413
-        targetPort: 51413
-        protocol: UDP
-
+        port: "{{ .Values.service.torrent.ports.tcp.port }}"
+        targetPort: "{{ .Values.service.torrent.ports.tcp.targetPort }}"
+        protocol: udp
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
-  varrun:
+    mountPath: /config
+portal:
+  open:
     enabled: true

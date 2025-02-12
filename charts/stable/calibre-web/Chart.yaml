@@ -1,31 +1,37 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: media
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "0.6.12"
+appVersion: 0.6.24
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
 deprecated: false
-description: Calibre-Web is a web app providing a clean interface for browsing, reading
-  and downloading eBooks using an existing Calibre database.
-home: https://github.com/truecharts/apps/tree/master/charts/stable/calibre-web
-icon: https://truecharts.org/_static/img/appicons/calibre-web-icon.png
+description: Calibre-Web is a web app providing a clean interface for browsing, reading and downloading eBooks using an existing Calibre database.
+home: https://truecharts.org/charts/stable/calibre-web
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/calibre-web.webp
 keywords:
-- calibre-web
-- calibre
-- ebook
-kubeVersion: '>=1.16.0-0'
+  - calibre-web
+  - calibre
+  - ebook
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: calibre-web
 sources:
-- https://hub.docker.com/r/linuxserver/calibre-web/
-- https://github.com/janeczku/calibre-web
+  - https://fleet.linuxserver.io/image?name=linuxserver/calibre-web
+  - https://github.com/janeczku/calibre-web
+  - https://github.com/truecharts/charts/tree/master/charts/stable/calibre-web
 type: application
-version: 9.0.40
-annotations:
-  truecharts.org/catagories: |
-    - media
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+version: 20.5.4

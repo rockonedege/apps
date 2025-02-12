@@ -1,32 +1,38 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: media
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "8.3.0"
+appVersion: 9.0.0
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
 deprecated: false
 description: Logitech Media Server is a platform for home/office audio streaming.
-home: https://github.com/truecharts/apps/master/charts/incubator/logitech-media-server
-icon: https://truecharts.org/_static/img/appicons/logitech-media-server-icon.png
+home: https://truecharts.org/charts/stable/logitech-media-server
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/logitech-media-server.webp
 keywords:
-- logitech-media-server
-- squeezebox
-- audio
-- streaming
-kubeVersion: '>=1.16.0-0'
+  - logitech-media-server
+  - squeezebox
+  - audio
+  - streaming
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: logitech-media-server
 sources:
-- https://github.com/Logitech/slimserver
-- https://hub.docker.com/r/lmscommunity/logitechmediaserver
+  - https://github.com/Logitech/slimserver
+  - https://github.com/truecharts/charts/tree/master/charts/stable/logitech-media-server
+  - https://hub.docker.com/r/lmscommunity/logitechmediaserver
 type: application
-version: 2.0.63
-annotations:
-  truecharts.org/catagories: |
-    - media
-    - audio
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+version: 13.5.1

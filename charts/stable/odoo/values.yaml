@@ -1,54 +1,92 @@
 image:
-  repository: tccr.io/truecharts/odoo
+  repository: public.ecr.aws/docker/library/odoo
   pullPolicy: IfNotPresent
-  tag: v15.0@sha256:2cde7608ba62f1b1299b84150e803949532562ab5534fd455fa814779da692f7
-
-env:
-  USER: "{{ .Values.postgresql.postgresqlUsername }}"
-  PORT: 5432
-
-envValueFrom:
-  PASSWORD:
-    secretKeyRef:
-      name: dbcreds
-      key: postgresql-password
-  HOST:
-    secretKeyRef:
-      name: dbcreds
-      key: plainhost
-
+  tag: 18.0@sha256:e984296ff633ad1c41d5b2ce099e9c75727a330a2fcda60cb4724d3dfe00587e
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsUser: 1000
+    runAsGroup: 1000
 service:
   main:
     ports:
       main:
         port: 8069
-        targetPort: 8069
-  odoo:
-    enabled: true
-    ports:
-      xmlrpcs:
-        enabled: true
-        port: 8071
-        targetPort: 8071
-      longpolling:
-        enabled: true
-        port: 8072
-        targetPort: 8072
-
+odoo:
+  additionalConf: []
+workload:
+  main:
+    podSpec:
+      initContainers:
+        init-db:
+          type: install
+          enabled: true
+          imageSelector: "image"
+          env:
+            ODOO_RC: /etc/odoo/odoo.conf
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              /usr/bin/odoo --config=/etc/odoo/odoo.conf \
+                            --stop-after-init \
+                            --without-demo=all \
+                            --init=base
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: true
+              type: http
+              path: /web/health
+            readiness:
+              enabled: true
+              type: http
+              path: /web/health
+            startup:
+              enabled: true
+              type: http
+              path: /web/health
+          env:
+            ODOO_RC: /etc/odoo/odoo.conf
 persistence:
   odoo:
     enabled: true
-    mountPath: "/var/lib/odoo"
+    targetSelector:
+      main:
+        main:
+          mountPath: "/var/lib/odoo"
+        init-db:
+          mountPath: "/var/lib/odoo"
   addons:
     enabled: true
-    mountPath: "/mnt/extra-addons"
-  customconfig:
+    targetSelector:
+      main:
+        main:
+          mountPath: "/mnt/extra-addons"
+        init-db:
+          mountPath: "/mnt/extra-addons"
+  odoo-config:
     enabled: true
-    mountPath: "/etc/odoo"
-
+    type: configmap
+    objectName: odoo-config
+    targetSelector:
+      main:
+        main:
+          mountPath: /etc/odoo/odoo.conf
+          subPath: odoo.conf
+          readOnly: true
+        init-db:
+          mountPath: /etc/odoo/odoo.conf
+          subPath: odoo.conf
+          readOnly: true
 # Enabled postgres
-postgresql:
-  enabled: true
-  existingSecret: "dbcreds"
-  postgresqlUsername: odoo
-  postgresqlDatabase: odoo
+cnpg:
+  main:
+    enabled: true
+    user: odoo
+    database: odoo
+portal:
+  open:
+    enabled: true

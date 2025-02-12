@@ -1,27 +1,13 @@
 image:
-  repository: tccr.io/truecharts/unmanic
-  tag: v0.1.4@sha256:572692adb8b8a04225e8225886ee3cc69087fa141abeb5c44cf793b139a90ddc
+  repository: docker.io/josh5/unmanic
+  tag: 0.2.7@sha256:7652682370454f509d718d9dcfbd27c7099def3800f770bb7bb932c5a6e0212a
   pullPolicy: IfNotPresent
-
-securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  TZ: UTC
-  PUID: 568
-
 service:
   main:
     ports:
       main:
         port: 10157
         targetPort: 8888
-
 persistence:
   config:
     enabled: true
@@ -38,3 +24,12 @@ persistence:
     type: emptyDir
   varrun:
     enabled: true
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0

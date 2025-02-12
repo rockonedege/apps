@@ -1,32 +1,41 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: media
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "0.1.0.1240"
+appVersion: 0.4.10.2734
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
 deprecated: false
 description: A fork of Radarr to work with Books & AudioBooks
-home: https://github.com/truecharts/apps/tree/master/charts/stable/readarr
-icon: https://truecharts.org/_static/img/appicons/readarr-icon.png
+home: https://truecharts.org/charts/stable/readarr
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/readarr.webp
 keywords:
-- readarr
-- torrent
-- usenet
-- AudioBooks
-- ebooks
-kubeVersion: '>=1.16.0-0'
+  - readarr
+  - torrent
+  - usenet
+  - AudioBooks
+  - ebooks
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: readarr
 sources:
-- https://github.com/Readarr/Readarr
-- https://readarr.com
+  - https://ghcr.io/elfhosted/readarr-develop
+  - https://ghcr.io/onedr0p/exportarr
+  - https://github.com/Readarr/Readarr
+  - https://github.com/truecharts/charts/tree/master/charts/stable/readarr
+  - https://readarr.com
 type: application
-version: 9.0.63
-annotations:
-  truecharts.org/catagories: |
-    - media
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+version: 24.4.3

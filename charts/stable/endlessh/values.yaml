@@ -1,28 +1,36 @@
 image:
-  repository: tccr.io/truecharts/endlessh
+  repository: ghcr.io/linuxserver/endlessh
   pullPolicy: IfNotPresent
-  tag: v2021.11.21
-
+  tag: 2021.11.21@sha256:d1f67963c18ccfc995338c96276ec7563ff5661ddd3cd2ecd554b0c8526ea1a9
 securityContext:
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-
+  container:
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         targetPort: 2222
+        protocol: tcp
         port: 10128
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env: {}
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
-  varrun:
-    enabled: true
+    mountPath: /config
+portal:
+  open:
+    enabled: false

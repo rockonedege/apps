@@ -1,39 +1,51 @@
 image:
-  repository: tccr.io/truecharts/esphome
+  repository: docker.io/esphome/esphome
   pullPolicy: IfNotPresent
-  tag: v2022.1.4@sha256:0209403e529d5a8a2d3798fec5bc44c33191fa9d9c505a523c9e5767f195b7da
-
-# App needs to run as root because of this: https://github.com/esphome/issues/issues/2752
+  tag: 2024.12.4@sha256:fb17727746ec9c15394b3371da47fa4c4e2f813103ef602d9b30de38fbd725ae
 securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-  privileged: true
-  allowPrivilegeEscalation: true
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    privileged: true
+    allowPrivilegeEscalation: true
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         port: 6052
         targetPort: 6052
-
-env: {}
-  # ESPHOME_DASHBOARD_USE_PING: true
-  # ESPHOME_DASHBOARD_RELATIVE_URL: "/"
-  # ESPHOME_QUICKWIZARD:
-  # ESPHOME_IS_HASSIO:
-  # DISABLE_HA_AUTHENTICATION:
-  # USERNAME:
-  # PASSWORD:
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
+          env:
+            ESPHOME_DASHBOARD_USE_PING: false
+            ESPHOME_DASHBOARD_RELATIVE_URL: /
+            # ESPHOME_QUICKWIZARD:
+            # ESPHOME_IS_HASSIO:
+            # DISABLE_HA_AUTHENTICATION:
+            # USERNAME:
+            # PASSWORD:
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
+    mountPath: /config
   platformio:
     enabled: true
-    mountPath: "/.platformio"
+    mountPath: /.platformio
+portal:
+  open:
+    enabled: true

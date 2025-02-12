@@ -1,32 +1,37 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: cms
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "3.6.8"
+appVersion: 4.25.11
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
-- condition: postgresql.enabled
-  name: postgresql
-  repository: https://truecharts.org/
-  version: 6.0.68
-description: Strapi is the leading open-source headless CMS. It’s 100% JavaScript, fully customizable and developer-first.
-home: https://github.com/truecharts/apps/tree/master/charts/stable/strapi
-icon: https://truecharts.org/_static/img/appicons/strapi-icon.png
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
+deprecated: false
+description: Open-source headless CMS. JavaScript, fully customizable and developer-first.
+home: https://truecharts.org/charts/stable/strapi
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/strapi.webp
 keywords:
-- strapi
-- cms
-kubeVersion: '>=1.16.0-0'
+  - strapi
+  - cms
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: strapi
 sources:
-- https://hub.docker.com/r/strapi/strapi
-- https://github.com/strapi/strapi
-- https://docs.strapi.io/developer-docs/latest/setup-deployment-guides/installation/docker.html#creating-a-strapi-project
-version: 1.0.5
-annotations:
-  truecharts.org/catagories: |
-    - media
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+  - https://github.com/naskio/docker-strapi
+  - https://github.com/truecharts/charts/tree/master/charts/stable/strapi
+  - https://hub.docker.com/r/naskio/strapi
+  - https://truecharts.org/charts/stable/strapi
+type: application
+version: 15.6.1

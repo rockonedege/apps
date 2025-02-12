@@ -1,29 +1,50 @@
-# Introduction
+---
+title: README
+---
 
-Function library for TrueCharts
+## General Info
 
-Function library for TrueCharts
-Since a lot of the TrueCharts Apps and Charts follow a similar pattern, this library was built to reduce maintenance cost between the charts that use it and try achieve a goal of being DRY.
+For more information about this Chart, please check the docs on the TrueCharts [website](https://truecharts.org/charts/library/common)
 
-## Requirements
+**This chart is not maintained by the upstream project and any issues with the chart should be raised [here](https://github.com/truecharts/charts/issues/new/choose)**
 
-Kubernetes: `>=1.16.0-0`
+## Installation
 
-## Dependencies
+### Helm-Chart installation
 
-| Repository | Name | Version |
-|------------|------|---------|
+To install TrueCharts Helm charts using Helm, you can use our OCI Repository.
 
-## Installing the Chart
+`helm install mychart oci://tccr.io/truecharts/common`
 
-This is a Helm Library Chart.
-WARNING: THIS CHART IS NOT MEANT TO BE INSTALLED DIRECTLY
+For more information on how to install TrueCharts Helm charts, checkout the [instructions on the website](/guides)
+
+## Chart Specific Guides and information
+
+All our charts have dedicated documentation pages.
+The documentation for this chart can be found here:
+https://truecharts.org/charts/library/common
+
+## Configuration Options
+
+To view the chart specific options, please view Values.yaml included in the chart.
+The most recent version of which, is available here: https://github.com/truecharts/public/blob/master/charts/library/common/values.yaml
+
+All our Charts use a shared "common" library chart that contains most of the templating and options.
+For the complete overview of all available options, please checkout the documentation for them on the [common docs on our website](/common)
+
+For information about the common chart and all defaults included with it, please review its values.yaml file available here: https://github.com/truecharts/public/blob/master/charts/library/common/values.yaml
 
 ## Support
 
-- Please check our [quick-start guides](https://truecharts.org/manual/Quick-Start%20Guides/01-Open-Apps/) first.
-- See the [Wiki](https://truecharts.org)
+- See the [Website](https://truecharts.org)
 - Check our [Discord](https://discord.gg/tVsPTHWTtr)
-- Open a [issue](https://github.com/truecharts/apps/issues/new/choose)
+- Open a [issue](https://github.com/truecharts/charts/issues/new/choose)
+
 ---
-All Rights Reserved - The TrueCharts Project
+
+## Sponsor TrueCharts
+
+TrueCharts can only exist due to the incredible effort of our staff.
+Please consider making a [donation](/general/sponsor) or contributing back to the project any way you can!
+
+_All Rights Reserved - The TrueCharts Project_

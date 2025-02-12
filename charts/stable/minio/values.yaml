@@ -1,54 +1,64 @@
 image:
-  # -- image repository
-  repository: tccr.io/truecharts/minio
-  # -- image tag
-  tag: latest@sha256:8129f69c85b84e13f085a1ce127f108cee0ea84a1f496e8065796c7a15a08442
-  # -- image pull policy
+  repository: quay.io/minio/minio
+  tag: RELEASE.2025-01-20T14-49-07Z@sha256:ed9be66eb5f2636c18289c34c3b725ddf57815f2777c77b5938543b78a44f144
   pullPolicy: IfNotPresent
-
-# -- Override the args for the default container.
-args: ["server", "/data", "--console-address", ":9001"]
-
-secret:
-    # -- Minio Password
-  MINIO_ROOT_PASSWORD: "changeme"
-
-# -- environment variables. See more environment variables in the [minio documentation](https://docs.min.io).
-# @default -- See below
-env:
-  # -- Set the container timezone
-  TZ: UTC
-  # -- Minio Username
-  MINIO_ROOT_USER: "minio"
-  MINIO_BROWSER_REDIRECT_URL: ""
-
-probes:
-  liveness:
-    path: "/minio/health/live"
-
-  readiness:
-    path: "/minio/health/ready"
-
-# -- Configures service settings for the chart.
-# @default -- See values.yaml
 service:
   main:
     ports:
       main:
-        port: 10106
-        targetPort: 9000
-  console:
+        port: 10107
+        targetPort: 10107
+  api:
     enabled: true
     ports:
-      console:
+      api:
         enabled: true
-        targetPort: 9001
-        port: 10107
-
-securityContext:
-  readOnlyRootFilesystem: false
-
+        targetPort: 10106
+        port: 10106
+ingress:
+  api:
+    enabled: false
+    targetSelector:
+      api: api
 persistence:
   config:
     enabled: true
     mountPath: "/data"
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              custom: true
+              spec:
+                httpGet:
+                  scheme: HTTP
+                  path: "/minio/health/live"
+                  port: 10106
+            readiness:
+              custom: true
+              spec:
+                httpGet:
+                  scheme: HTTP
+                  path: "/minio/health/ready"
+                  port: 10106
+          args:
+            - "server"
+            - "/data"
+            - "--address"
+            - ":10106"
+            - "--console-address"
+            - ":10107"
+          env:
+            MINIO_ROOT_USER: "minio"
+            MINIO_BROWSER_REDIRECT_URL: ""
+            MINIO_SERVER_URL: ""
+            MINIO_ROOT_PASSWORD: "changeme"

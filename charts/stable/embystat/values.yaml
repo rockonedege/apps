@@ -1,28 +1,39 @@
 image:
-  repository: tccr.io/truecharts/embystat
+  repository: ghcr.io/linuxserver/embystat
   pullPolicy: IfNotPresent
-  tag: v0.2.0
-
+  tag: 0.2.0@sha256:adc479353fc0b810c21935a8fe3c2d20d9f7027edc9574477d702ec2ad414754
 securityContext:
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         targetPort: 6555
         port: 6555
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
+          env: {}
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
-  varrun:
+    mountPath: /config
+portal:
+  open:
     enabled: true

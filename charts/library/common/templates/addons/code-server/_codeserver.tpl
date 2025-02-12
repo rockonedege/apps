@@ -2,49 +2,71 @@
 Template to render code-server addon
 It will include / inject the required templates based on the given values.
 */}}
-{{- define "common.addon.codeserver" -}}
+{{- define "tc.v1.common.addon.codeserver" -}}
+{{- $targetSelector := "main" -}}
+{{- if $.Values.addons.codeserver.targetSelector -}}
+  {{- $targetSelector = $.Values.addons.codeserver.targetSelector -}}
+{{- end -}}
 {{- if .Values.addons.codeserver.enabled -}}
-  {{/* Append the code-server container to the additionalContainers */}}
-  {{- $container := include "common.addon.codeserver.container" . | fromYaml -}}
+  {{/* Append the code-server container to the workloads */}}
+  {{- $container := include "tc.v1.common.addon.codeserver.container" . | fromYaml -}}
   {{- if $container -}}
-    {{- $_ := set .Values.additionalContainers "addon-codeserver" $container -}}
+    {{- $workload := get $.Values.workload $targetSelector -}}
+    {{- $_ := set $workload.podSpec.containers "codeserver" $container -}}
   {{- end -}}
 
-  {{/* Include the deployKeySecret if not empty */}}
-  {{- $secret := include "common.addon.codeserver.deployKeySecret" . -}}
-  {{- if $secret -}}
-    {{- $secret | nindent 0 -}}
-  {{- end -}}
+  {{- $hasPrimaryService := false -}}
+  {{- range $svcName, $svcValues := .Values.service -}}
+    {{- $enabled := (include "tc.v1.common.lib.util.enabled" (dict
+                    "rootCtx" $ "objectData" $svcValues
+                    "name" $svcName "caller" "Code Server Service"
+                    "key" "addons.codeserver.service")) -}}
 
-  {{/* Append the secret volume to the volumes */}}
-  {{- $volume := include "common.addon.codeserver.deployKeyVolumeSpec" . | fromYaml -}}
-  {{- if $volume -}}
-    {{- $_ := set .Values.persistence "deploykey" (dict "enabled" "true" "mountPath" "-" "type" "custom" "volumeSpec" $volume) -}}
+    {{- if eq $enabled "true" -}}
+      {{- if $svcValues.primary -}}
+        {{- $hasPrimaryService = true -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
 
   {{/* Add the code-server service */}}
   {{- if .Values.addons.codeserver.service.enabled -}}
     {{- $serviceValues := .Values.addons.codeserver.service -}}
-    {{- $_ := set $serviceValues "nameOverride" "codeserver" -}}
-    {{- $_ := set $ "ObjectValues" (dict "service" $serviceValues) -}}
-    {{- include "common.classes.service" $ -}}
-    {{- $_ := unset $ "ObjectValues" -}}
+    {{- $_ := set $serviceValues "targetSelector" $targetSelector -}}
+    {{- if not $hasPrimaryService -}}
+      {{- $_ := set $serviceValues "primary" true -}}
+    {{- end -}}
+    {{- $_ := set .Values.service "codeserver" $serviceValues -}}
   {{- end -}}
 
   {{/* Add the code-server ingress */}}
   {{- if .Values.addons.codeserver.ingress.enabled -}}
     {{- $ingressValues := .Values.addons.codeserver.ingress -}}
-    {{- $_ := set $ingressValues "nameOverride" "codeserver" -}}
-
-    {{/* Determine the target service name & port */}}
-    {{- $svcName := printf "%v-codeserver" (include "common.names.fullname" .) -}}
-    {{- $svcPort := .Values.addons.codeserver.service.ports.codeserver.port -}}
-    {{- range $_, $host := $ingressValues.hosts -}}
-      {{- $_ := set (index $host.paths 0) "service" (dict "name" $svcName "port" $svcPort) -}}
+    {{- if not $ingressValues.targetSelector -}}
+      {{/* Assumes that both service and port are named codeserver */}}
+      {{- $_ := set $ingressValues "targetSelector" (dict "codeserver" "codeserver") -}}
     {{- end -}}
-    {{- $_ := set $ "ObjectValues" (dict "ingress" $ingressValues) -}}
-    {{- include "common.classes.ingress" $ -}}
-    {{- $_ := unset $ "ObjectValues" -}}
+
+    {{- $hasPrimaryIngress := false -}}
+    {{- range $ingName, $ingValues := $.Values.ingress -}}
+      {{- $enabled := (include "tc.v1.common.lib.util.enabled" (dict
+                      "rootCtx" $ "objectData" $ingValues
+                      "name" $ingName "caller" "Code Server Ingress"
+                      "key" "addons.codeserver.ingress")) -}}
+
+      {{- if eq $enabled "true" -}}
+        {{- if $ingValues.primary -}}
+          {{- $hasPrimaryIngress = true -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- if not $hasPrimaryIngress -}}
+      {{- $_ := set $ingressValues "primary" true -}}
+    {{- end -}}
+
+    {{/* Let spawner handle the rest */}}
+    {{- $_ := set $.Values.ingress "codeserver" $ingressValues -}}
   {{- end -}}
 {{- end -}}
 {{- end -}}

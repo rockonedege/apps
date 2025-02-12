@@ -1,25 +1,23 @@
 image:
-  repository: tccr.io/truecharts/node-red
+  repository: docker.io/nodered/node-red
   pullPolicy: IfNotPresent
-  tag: v2.2.0@sha256:67a35d043199a6854ab63e8d86658fc77c4be003240abab21465a69b40c3de5d
-
-# See more environment varaibles in the node-red documentation
-# https://nodered.org/docs/getting-started/docker
-env: {}
-  # TZ:
-  # NODE_OPTIONS:
-  # NODE_RED_ENABLE_PROJECTS:
-  # NODE_RED_ENABLE_SAFE_MODE:
-  # FLOWS:
-
+  tag: 4.0.8@sha256:94926616c16e016e2468c2c83a8d9040ffdef1999e54a2b36e54986d37de2f7f
 service:
   main:
     ports:
       main:
         port: 1880
         targetPort: 1880
-
 persistence:
   data:
     enabled: true
     mountPath: "/data"
+portal:
+  open:
+    enabled: true
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env: {}

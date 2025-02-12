@@ -1,51 +1,48 @@
 image:
-  repository: tccr.io/truecharts/babybuddy
+  repository: ghcr.io/linuxserver/babybuddy
   pullPolicy: IfNotPresent
-  tag: v1.9.3@sha256:a069c8e3aeb2d33f08e9b4692aa5f0cd8b2ce439db09cb0223449f99d06c2c5d
-
-# See more environment variables in the babybuddy documentation
-# https://github.com/linuxserver/docker-babybuddy#parameters
-env:
-  DB_ENGINE: "django.db.backends.postgresql"
-  DB_NAME: "{{ .Values.postgresql.postgresqlDatabase }}"
-  DB_USER: "{{ .Values.postgresql.postgresqlUsername }}"
-  DB_PORT: "5432"
-
-envValueFrom:
-  DB_PASSWORD:
-    secretKeyRef:
-      name: dbcreds
-      key: postgresql-password
-  DB_HOST:
-    secretKeyRef:
-      name: dbcreds
-      key: plainhost
-
+  tag: 2.7.0@sha256:eba88cbfe91a762d667da16d6cc25938fc38ded092e8563a528907b5580dd4cb
 securityContext:
-  allowPrivilegeEscalation: true
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         port: 10069
+        protocol: http
         targetPort: 8000
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            DB_ENGINE: "django.db.backends.postgresql"
+            DB_NAME: "{{ .Values.cnpg.main.database }}"
+            DB_USER: "{{ .Values.cnpg.main.user }}"
+            DB_PORT: "5432"
+            CSRF_TRUSTED_ORIGINS: ""
+            DB_PASSWORD:
+              secretKeyRef:
+                name: cnpg-main-user
+                key: password
+            DB_HOST:
+              secretKeyRef:
+                name: cnpg-main-urls
+                key: host
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
-  varrun:
+    mountPath: /config
+cnpg:
+  main:
     enabled: true
-
-# Enabled postgres
-postgresql:
-  enabled: true
-  existingSecret: "dbcreds"
-  postgresqlUsername: babybuddy
-  postgresqlDatabase: babybuddy
+    user: babybuddy
+    database: babybuddy
+portal:
+  open:
+    enabled: true

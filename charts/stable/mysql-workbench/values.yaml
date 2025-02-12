@@ -1,28 +1,29 @@
 image:
-  repository: tccr.io/truecharts/mysql-workbench
+  repository: ghcr.io/linuxserver/mysql-workbench
   pullPolicy: IfNotPresent
-  tag: v8.0.28
-
-securityContext:
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-
+  tag: 8.0.41@sha256:2e72ea0d14a25416845787a68379987d7dd1de0dc3d0f62ae6dc8bf7075632d2
 service:
   main:
     ports:
       main:
         targetPort: 3000
+        protocol: http
         port: 10134
-
 persistence:
   config:
     enabled: true
     mountPath: "/config"
   varrun:
     enabled: true
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      add:
+        - IPC_LOCK
+    runAsUser: 0
+    runAsGroup: 0

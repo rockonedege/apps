@@ -1,29 +1,35 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: utilities
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "0.5.6"
+appVersion: 2.6.0
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
-- condition: postgresql.enabled
-  name: postgresql
-  repository: https://truecharts.org/
-  version: 6.0.68
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
+deprecated: false
 description: Mealie is a self hosted recipe manager and meal planner with a RestAPI backend
-home: https://github.com/truecharts/apps/tree/master/charts/stable/mealie
-icon: https://truecharts.org/_static/img/appicons/mealie-icon.png
+home: https://truecharts.org/charts/stable/mealie
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/mealie.webp
 keywords:
-- grocy
-kubeVersion: '>=1.16.0-0'
+  - grocy
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: mealie
 sources:
-- https://github.com/hay-kot/mealie
-version: 5.0.23
-annotations:
-  truecharts.org/catagories: |
-    - utilities
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+  - https://ghcr.io/mealie-recipes/mealie
+  - https://github.com/mealie-recipes/mealie
+  - https://github.com/truecharts/charts/tree/master/charts/stable/mealie
+type: application
+version: 24.7.0

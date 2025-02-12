@@ -1,30 +1,25 @@
 image:
-  repository: tccr.io/truecharts/oscam
+  repository: ghcr.io/linuxserver/oscam
   pullPolicy: IfNotPresent
-  tag: version-11693@sha256:dcaa24c5076e020243aa0bcf2b5e2edbd1fcf6f9066c50e3f5c2f32937c68cb9
-
-securityContext:
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 20
-
-env:
-  TZ: UTC
-  PUID: 568
-
+  tag: 11868-ls132@sha256:2b4ed7632e35ffc1d2c0c85d68430f1370345e0d8d3251cef65644ec40ec8238
 service:
   main:
     ports:
       main:
         port: 10062
         targetPort: 8888
-
 persistence:
   config:
     enabled: true
     mountPath: "/config"
-
   varrun:
     enabled: true
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 20

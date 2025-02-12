@@ -1,21 +1,7 @@
 image:
-# -- image repository
-  repository: tccr.io/truecharts/owncast
-  # -- image tag
-  tag: v0.0.10@sha256:7fe3fdf3caea1808b8e0bc163bcaf28e6aacb6df65940c692f9209e2cf765f3e
-  # -- image pull policy
+  repository: docker.io/gabekangas/owncast
+  tag: 0.2.1@sha256:1cd1483b0caa8a26be5c2aad623be8ded5d6d1f675c7842ae7b424a92b6f875b
   pullPolicy: IfNotPresent
-
-securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-# -- Configures service settings for the chart.
-# @default -- See values.yaml
 service:
   main:
     ports:
@@ -24,17 +10,22 @@ service:
         targetPort: 8080
   rtmp:
     enabled: true
-    externalTrafficPolicy: Local
+    # externalTrafficPolicy: Local
     ports:
       rtmp:
         enabled: true
         port: 1935
         targetPort: 1935
-
-
-# -- Configure persistence settings for the chart under this key.
-# @default -- See values.yaml
 persistence:
   config:
     enabled: true
     mountPath: "/app/data"
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0

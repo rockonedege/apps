@@ -1,13 +1,12 @@
 image:
-  repository: tccr.io/truecharts/unifi
-  tag: v6.5.55@sha256:c74556ef862dab1534ed848d6efa57f40a11399172230aec57e5e850ce542921
+  repository: ghcr.io/goofball222/unifi
+  tag: 9.0.114@sha256:80f7cec9c823477c7f12aa06f059db903dcdf5aeb9527aed2cf8dada9bdb46fe
   pullPolicy: IfNotPresent
-
 service:
   main:
     ports:
       main:
-        protocol: HTTPS
+        protocol: https
         port: 8443
         targetPort: 8443
   comm:
@@ -24,7 +23,7 @@ service:
         enabled: true
         port: 3478
         targetPort: 3478
-        protocol: UDP
+        protocol: udp
   speedtest:
     enabled: true
     ports:
@@ -39,23 +38,73 @@ service:
         enabled: true
         port: 8880
         targetPort: 8880
-        protocol: HTTP
+        protocol: http
       websecure:
         enabled: true
         port: 8843
         targetPort: 8843
-        protocol: HTTPS
-
-securityContext:
-  readOnlyRootFilesystem: false
-
-podSecurityContext:
-  runAsGroup: 999
-  runAsUser: 999
-
-env: {}
-
+        protocol: https
 persistence:
   config:
     enabled: true
-    mountPath: "/unifi"
+    targetSelector:
+      main:
+        main:
+          mountPath: /usr/lib/unifi/olddata
+        migrate:
+          mountPath: /usr/lib/unifi/olddata
+  data:
+    enabled: true
+    targetSelector:
+      main:
+        main:
+          mountPath: /usr/lib/unifi/data
+        migrate:
+          mountPath: /usr/lib/unifi/data
+  logs:
+    enabled: true
+    mountPath: "/usr/lib/unifi/logs"
+    type: "emptyDir"
+  certs:
+    enabled: true
+    mountPath: "/usr/lib/unifi/cert"
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsGroup: 0
+    runAsUser: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            RUN_CHOWN: true
+            DB_MONGO_LOCAL: true
+      initContainers:
+        migrate:
+          enabled: true
+          type: init
+          imageSelector: alpineImage
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - |
+              newdatadir="/usr/lib/unifi/data"
+              olddatadir="/usr/lib/unifi/olddata/data"
+              # Check the dir exists
+              [ ! -d "$newdatadir" ] && echo "$newdatadir missing" && exit 1
+              # Check if there is a data/data dir to migrate
+              [ ! -d "$olddatadir" ] && echo "No $olddatadir dir found. Migration skipped" && exit 0
+
+              # Check if the new data dir is empty, ignoring the old data dir
+              dirs=$(ls -A "$newdatadir" | grep -v "data")
+              if [ -n "$dirs" ]; then
+                echo "New data dir is empty. Migrating data one level up"
+                cp -rf $olddatadir/* $newdatadir || echo "Failed to move data" && exit 1
+                echo "Data migration complete"
+              fi

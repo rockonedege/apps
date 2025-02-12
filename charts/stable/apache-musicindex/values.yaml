@@ -1,26 +1,20 @@
 image:
-  # -- image repository
-  repository: tccr.io/truecharts/apache-musicindex
-  # -- image tag
-  tag: v1.4.1-2@sha256:442d1edfbf89b8a2a42c0d649f53f091c39256c65f922078ad38ff60bdbdadf9
-  # -- image pull policy
+  repository: ghcr.io/k8s-at-home/apache-musicindex
+  tag: v1.4.1-2@sha256:c9bd82dc5fdaaad16a9a07c61672e29886d9399c7eee6e57f1d758124783c34a
   pullPolicy: IfNotPresent
-
-# -- Allows to start web server on ports 80 and 443
-# @default -- See values.yaml
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-# -- Configures service settings for the chart.
-# @default -- See values.yaml
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         port: 10006
+        protocol: http
         targetPort: 80
+portal:
+  open:
+    enabled: true

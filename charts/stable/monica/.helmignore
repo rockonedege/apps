@@ -24,3 +24,9 @@
 OWNERS
 # helm-docs templates
 *.gotmpl
+# docs folder
+/docs
+# icon
+icon.png
+icon.webp
+icon-small.webp

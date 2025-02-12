@@ -1,24 +1,27 @@
 image:
-  repository: tccr.io/truecharts/filezilla
+  repository: ghcr.io/linuxserver/filezilla
+  tag: 3.68.1@sha256:51d3b1dc15ab48da1437e1b28fd8c5cac1bc29e42e479713c343007c7690749c
   pullPolicy: IfNotPresent
-  tag: v3.55.1@sha256:46fb9508d7b15e833095d8a9a02d7d516fcee336caf4a20ee4b1d9b40e76d2eb
-
-env:
-  PUID: 568
 
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
+  container:
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
 
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          securityContext:
 
 service:
   main:
     ports:
       main:
         port: 10035
+        protocol: http
         targetPort: 3000
 
 persistence:
@@ -26,4 +29,8 @@ persistence:
     enabled: true
     mountPath: "/config"
   varrun:
+    enabled: false
+
+portal:
+  open:
     enabled: true

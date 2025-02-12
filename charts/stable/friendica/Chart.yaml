@@ -1,35 +1,50 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: social
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "2022.02"
+appVersion: 2024.12.0
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
-- condition: mariadb.enabled
-  name: mariadb
-  repository: https://truecharts.org/
-  version: 1.0.71
-- condition: redis.enabled
-  name: redis
-  repository: https://truecharts.org
-  version: 1.0.74
-description: "Welcome to the free social web"
-home: https://github.com/truecharts/apps/tree/master/charts/stable/friendica
-icon: https://truecharts.org/_static/img/appicons/friendica-icon.png
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
+  - name: mariadb
+    version: 15.8.2
+    repository: oci://tccr.io/truecharts
+    condition: mariadb.enabled
+    alias: ""
+    tags: []
+    import-values: []
+  - name: redis
+    version: 15.6.4
+    repository: oci://tccr.io/truecharts
+    condition: redis.enabled
+    alias: ""
+    tags: []
+    import-values: []
+deprecated: false
+description: Welcome to the free social web
+home: https://truecharts.org/charts/stable/friendica
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/friendica.webp
 keywords:
   - friend
   - social
-kubeVersion: '>=1.16.0-0'
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: friendica
 sources:
   - https://friendi.ca/
+  - https://github.com/truecharts/charts/tree/master/charts/stable/friendica
   - https://hub.docker.com/_/friendica
-version: 0.0.40
-annotations:
-  truecharts.org/catagories: |
-    - social
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+type: application
+version: 16.16.8

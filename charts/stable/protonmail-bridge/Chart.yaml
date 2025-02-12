@@ -1,27 +1,36 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: media
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "1.8.10"
+appVersion: 3.12.0
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
-description: Container for protonmail bridge to work on the network.
-home: https://github.com/truecharts/apps/tree/master/charts/stable/protonmail-bridge
-icon: https://truecharts.org/_static/img/appicons/protonmail-bridge-icon.png
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
+deprecated: false
+description: ProtonMail IMAP/SMTP Bridge to work on the network.
+home: https://truecharts.org/charts/stable/protonmail-bridge
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/protonmail-bridge.webp
 keywords:
-- protonmail
-- protonmail-bridge
-kubeVersion: '>=1.16.0-0'
+  - protonmail
+  - protonmail-bridge
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: protonmail-bridge
 sources:
-- https://github.com/shenxn/protonmail-bridge-docker
-- https://hub.docker.com/r/shenxn/protonmail-bridge
-version: 4.0.40
-annotations:
-  truecharts.org/catagories: |
-    - media
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+  - https://github.com/shenxn/protonmail-bridge-docker
+  - https://github.com/truecharts/charts/tree/master/charts/stable/protonmail-bridge
+  - https://hub.docker.com/r/shenxn/protonmail-bridge
+type: application
+version: 16.6.1

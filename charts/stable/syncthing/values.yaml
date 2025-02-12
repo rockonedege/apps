@@ -1,8 +1,19 @@
 image:
-  repository: tccr.io/truecharts/syncthing
+  repository: docker.io/syncthing/syncthing
   pullPolicy: IfNotPresent
-  tag: v1.19.0@sha256:2b374cc7ffe76f3636b7be6c9e1eb6c0bf429d98390ea7c22a26d3aa101fbc19
-
+  tag: 1.29.2@sha256:3f5c9776aac65e92a1c7d49f3443c35e4da92ae0d8e40308af6b7fae6e9b301a
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              path: /rest/noauth/health
+            readiness:
+              path: /rest/noauth/health
+            startup:
+              path: /rest/noauth/health
 service:
   main:
     ports:
@@ -23,7 +34,7 @@ service:
         enabled: true
         port: 22000
         targetPort: 22000
-        protocol: UDP
+        protocol: udp
   discovery:
     enabled: true
     ports:
@@ -31,9 +42,11 @@ service:
         enabled: true
         port: 21027
         targetPort: 21027
-        protocol: UDP
-
+        protocol: udp
 persistence:
   config:
     enabled: true
     mountPath: "/var/syncthing"
+portal:
+  open:
+    enabled: true

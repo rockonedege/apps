@@ -1,0 +1,30 @@
+image:
+  pullPolicy: IfNotPresent
+  repository: quay.io/fjudith/pwm
+  tag: latest@sha256:5842a0b60eb81b657417538fbb5c8b82d47e81f5c7c9f9149341dbf0918a5e6f
+persistence:
+  appdata:
+    enabled: true
+    mountPath: /usr/share/pwm
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsGroup: 0
+    runAsUser: 0
+service:
+  main:
+    ports:
+      main:
+        port: 8282
+        protocol: tcp
+        targetPort: 8080
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            PWM_APPLICATIONFLAGS: NoFileLock

@@ -1,29 +1,40 @@
 image:
-  repository: tccr.io/truecharts/calibre-web
+  repository: lscr.io/linuxserver/calibre-web
   pullPolicy: IfNotPresent
-  tag: version-0.6.12@sha256:3f54c0f7bec8c635f019d88039b986c5fa8951445daf5016b4cdb1118694c612
-
+  tag: version-0.6.24@sha256:a9920b3c5125b56f0b31a454075bbb06a9d211f2eee1fe419fd73b1f2a0201a5
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         port: 8083
+        protocol: http
         targetPort: 8083
-
-env: {}
-  # TZ:
-  # PUID:
-  # DOCKER_MODS:
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
+          env: {}
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
+    mountPath: /config
+portal:
+  open:
+    enabled: true

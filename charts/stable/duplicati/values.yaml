@@ -1,29 +1,33 @@
 image:
-  # -- image repository
-  repository: tccr.io/truecharts/duplicati
-  # -- image tag
-  tag: vbeta@sha256:88147d0b04d6c05a33e3910359e4a429769bf395bd52a0b6a0c91e19b1909965
-  # -- image pull policy
+  repository: docker.io/duplicati/duplicati
+  tag: latest@sha256:c6a2efddd86bdaf7c6927ea5c807986df7c0395581d061595db4884db2783ac5
   pullPolicy: IfNotPresent
-
-# See more environment variables in the [duplicati documentation](https://github.com/linuxserver/docker-duplicati#parameters)
-# @default -- See below
-env:
-  # -- Set the container timezone
-  TZ: UTC
-
-# -- Configures service settings for the chart.
-# @default -- See values.yaml
 service:
   main:
     ports:
       main:
         port: 8200
         targetPort: 8200
-
-# -- Configure persistence settings for the chart under this key.
-# @default -- See values.yaml
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
+          env: {}
 persistence:
   config:
     enabled: true
-    mountPath: "/data"
+    mountPath: /data
+portal:
+  open:
+    enabled: true

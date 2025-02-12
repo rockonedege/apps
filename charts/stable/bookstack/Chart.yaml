@@ -1,16 +1,31 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: media
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "21.12.2021"
+appVersion: 24.12.20241223
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
-- condition: mariadb.enabled
-  name: mariadb
-  repository: https://truecharts.org/
-  version: 1.0.71
-description: "A simple, self-hosted, easy-to-use platform for organising and storing information."
-home: https://github.com/truecharts/apps/tree/master/charts/stable/bookstack
-icon: https://truecharts.org/_static/img/appicons/bookstack-icon.png
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
+  - name: mariadb
+    version: 15.8.2
+    repository: oci://tccr.io/truecharts
+    condition: mariadb.enabled
+    alias: ""
+    tags: []
+    import-values: []
+deprecated: false
+description: A simple, self-hosted, easy-to-use platform for organising and storing information.
+home: https://truecharts.org/charts/stable/bookstack
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/bookstack.webp
 keywords:
   - bookstack
   - book
@@ -18,18 +33,15 @@ keywords:
   - organizer
   - server
   - hosted
-kubeVersion: '>=1.16.0-0'
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: bookstack
 sources:
+  - https://ghcr.io/linuxserver/bookstack
+  - https://github.com/truecharts/charts/tree/master/charts/stable/bookstack
   - https://www.bookstackapp.com/
-  - https://hub.docker.com/r/linuxserver/bookstack
-version: 0.0.32
-annotations:
-  truecharts.org/catagories: |
-    - media
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+type: application
+version: 15.14.3

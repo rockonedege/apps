@@ -1,43 +1,104 @@
 image:
-  repository: tccr.io/truecharts/radarr
+  repository: ghcr.io/onedr0p/radarr
   pullPolicy: IfNotPresent
-  tag: v4.0.4.5922@sha256:6ae04c215461e63c8bde39256f3f713f86bb911cff566b72f5133469f2696571
-
+  tag: 5.18.4.9674@sha256:f63ab1d9875d81f1b6d7cd69427749451d2fab981e39ffb8d9071c2e21041170
+exportarrImage:
+  repository: ghcr.io/onedr0p/exportarr
+  pullPolicy: IfNotPresent
+  tag: v2.0.1@sha256:727e7bc8f2f0934a2117978c59f4476b954018b849a010ea6cfb380bd6539644
 securityContext:
-  readOnlyRootFilesystem: false
-
+  container:
+    readOnlyRootFilesystem: false
 service:
   main:
     ports:
       main:
         port: 7878
-        targetPort: 7878
-
-env: {}
-  # TZ: UTC
-  # PUID: 1001
-probes:
-  liveness:
-    enabled: true
-    ## Set this to true if you wish to specify your own livenessProbe
-    custom: true
-    ## The spec field contains the values for the default livenessProbe.
-    ## If you selected custom: true, this field holds the definition of the livenessProbe.
-    spec:
-      exec:
-        command:
-        - /usr/bin/env
-        - bash
-        - -c
-        - curl --fail localhost:7878/api/v3/system/status?apiKey=`IFS=\> && while
-          read -d \< E C; do if [[ $E = "ApiKey" ]]; then echo $C; fi; done < /config/config.xml`
-      failureThreshold: 5
-      initialDelaySeconds: 60
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 10
-
+  metrics:
+    enabled: "{{ .Values.metrics.main.enabled }}"
+    type: ClusterIP
+    ports:
+      metrics:
+        enabled: true
+        port: 7879
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            readiness:
+              enabled: true
+              type: http
+              path: /ping
+            liveness:
+              enabled: true
+              type: http
+              path: /ping
+            startup:
+              enabled: true
+              type: http
+              path: /ping
+          env:
+            RADARR__SERVER__PORT: "{{ .Values.service.main.ports.main.port }}"
+             # External | Basic | Forms
+            RADARR__AUTH__METHOD: ""
+            # DisabledForLocalAddresses | Enabled
+            RADARR__AUTH__REQUIRED: DisabledForLocalAddresses
+            # RADARR__APP__THEME: dark
+            # RADARR__APP__INSTANCENAME: Radarr
+            # RADARR__LOG__LEVEL: info
+            # RADARR__UPDATE__BRANCH: develop
+        exportarr:
+          enabled: "{{ .Values.metrics.main.enabled }}"
+          imageSelector: exportarrImage
+          args:
+            - radarr
+          probes:
+            liveness:
+              enabled: true
+              type: http
+              path: /healthz
+              port: "{{ .Values.service.metrics.ports.metrics.port }}"
+            readiness:
+              enabled: true
+              type: http
+              path: /healthz
+              port: "{{ .Values.service.metrics.ports.metrics.port }}"
+            startup:
+              enabled: true
+              type: http
+              path: /healthz
+              port: "{{ .Values.service.metrics.ports.metrics.port }}"
+          env:
+            INTERFACE: 0.0.0.0
+            PORT: "{{ .Values.service.metrics.ports.metrics.port }}"
+            URL: '{{ printf "http://%v:%v" (include "tc.v1.common.lib.chart.names.fullname" $) .Values.service.main.ports.main.port }}'
+            # additional metrics (slow)
+            # ENABLE_ADDITIONAL_METRICS: false
+            # enable gathering unknown queue items
+            # ENABLE_UNKNOWN_QUEUE_ITEMS: false
+            CONFIG: "/config/config.xml"
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
+    targetSelector:
+      main:
+        main:
+          mountPath: /config
+        exportarr:
+          mountPath: /config
+          readOnly: true
+metrics:
+  main:
+    enabled: true
+    type: "servicemonitor"
+    endpoints:
+      - port: metrics
+        path: /metrics
+    targetSelector: metrics
+    prometheusRule:
+      enabled: false
+portal:
+  open:
+    enabled: true

@@ -1,24 +1,17 @@
 image:
-  repository: tccr.io/truecharts/domoticz
+  repository: docker.io/domoticz/domoticz
   pullPolicy: IfNotPresent
-  tag: v2022.1.20220210
-
+  tag: 2024.7@sha256:ffba80df6855a0cdf853f0c020cfb4404797522a03d91c7512254325403327f9
 securityContext:
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-  WEBROOT: "domoticz"
-
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
-        targetPort: 8080
         port: 10144
   comm1:
     enabled: true
@@ -27,18 +20,20 @@ service:
         enabled: true
         targetPort: 6144
         port: 6144
-  comm2:
-    enabled: true
-    ports:
-      comm2:
-        enabled: true
-        targetPort: 1443
-        port: 1443
-
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            # Set default http port. Container also has SSL_PORT variable for SSL.
+            WWW_PORT: "{{ .Values.service.main.ports.main.port }}"
+            # Set userdata path to match previous linuxserver.io default
+            EXTRA_CMD_ARG: "-userdata {{ .Values.persistence.config.mountPath }}"
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
-  varrun:
+    mountPath: /opt/domoticz/userdata
+portal:
+  open:
     enabled: true

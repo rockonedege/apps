@@ -1,56 +1,62 @@
 image:
-  repository: tccr.io/truecharts/blog
+  repository: docker.io/m1k1o/blog
   pullPolicy: IfNotPresent
-  tag: latest@sha256:8928fcf62413459ea8fc5236a1eea28d8a15404f3fc9d0bee154c552000a871b
-
-secret:
-  BLOG_NICK: username
-  BLOG_PASS: password
-
+  tag: latest@sha256:f37be6dc7000d668c581c9de1f50ed0a1b83e29fe8a80b714225c07101c299ea
 securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-# See more environment variables in the blog documentation
-# https://github.com/nicholaswilde/docker-blog
-env:
-  BLOG_TITLE: Blog
-  BLOG_NAME: Max Musermann
-  BLOG_LANG: en
-  BLOG_DB_CONNECTION: postgres
-  BLOG_POSTGRES_USER: blog
-  BLOG_POSTGRES_PORT: 5432
-  BLOG_DB_NAME: blog
-
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         port: 10111
+        protocol: http
         targetPort: 80
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
+          env:
+            BLOG_TITLE: "Blog"
+            BLOG_NAME: "Max Musermann"
+            BLOG_LANG: "en"
+            BLOG_DB_CONNECTION: "postgres"
+            BLOG_POSTGRES_USER: "{{ .Values.cnpg.main.user }}"
+            BLOG_POSTGRES_PORT: "5432"
+            BLOG_DB_NAME: "{{ .Values.cnpg.main.database }}"
+            BLOG_POSTGRES_PASS:
+              secretKeyRef:
+                name: cnpg-main-user
+                key: password
+            BLOG_POSTGRES_HOST:
+              secretKeyRef:
+                name: cnpg-main-urls
+                key: host
+            BLOG_NICK: username
+            BLOG_PASS: password
 persistence:
   data:
     enabled: true
-    mountPath: "/var/www/html/data"
-
-envValueFrom:
-  BLOG_POSTGRES_PASS:
-    secretKeyRef:
-      name: dbcreds
-      key: postgresql-password
-  BLOG_POSTGRES_HOST:
-    secretKeyRef:
-      name: dbcreds
-      key: plainhost
-
-# Enabled postgres
-postgresql:
-  enabled: true
-  existingSecret: "dbcreds"
-  postgresqlUsername: blog
-  postgresqlDatabase: blog
+    mountPath: /var/www/html/data
+cnpg:
+  main:
+    enabled: true
+    user: blog
+    database: blog
+portal:
+  open:
+    enabled: true

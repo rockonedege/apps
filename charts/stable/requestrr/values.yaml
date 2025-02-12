@@ -1,18 +1,14 @@
 image:
-  repository: tccr.io/truecharts/requestrr
+  repository: docker.io/thomst08/requestrr
   pullPolicy: IfNotPresent
-  tag: v2.1.1
+  tag: v2.1.7@sha256:6de400daa5c78d3e79188ff7ebb50df8e8ed15b781f3145a07ecb46b41b12380
 
 securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
 
 service:
   main:
@@ -24,6 +20,10 @@ service:
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
+    mountPath: "/root/config"
   varrun:
+    enabled: true
+
+portal:
+  open:
     enabled: true

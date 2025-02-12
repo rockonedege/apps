@@ -19,6 +19,14 @@
 .project
 .idea/
 *.tmproj
-.vscode
+.vscode/
 # OWNERS file for Kubernetes
 OWNERS
+# helm-docs templates
+*.gotmpl
+# docs folder
+/docs
+# icon
+icon.png
+icon.webp
+icon-small.webp

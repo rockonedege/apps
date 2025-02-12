@@ -1,0 +1,44 @@
+name: Clustertool-go-lint
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+on:
+  # push:
+  #   branches:
+  #     - main
+  #   tags:
+  #     - "*"
+  #   paths:
+  #     - 'main.go'
+  #     - 'go.mod'
+  #     - 'go.sum'
+  #     - 'pkg/**'
+  #     - 'cmd/**'
+  #     - 'clustertool/**'
+  #     - ".github/workflows/clsutertool.test.yaml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'main.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'pkg/**'
+      - 'cmd/**'
+      - 'clustertool/**'
+      - ".github/workflows/clsutertool.test.yaml"
+permissions:
+  contents: read
+jobs:
+  golangci:
+    name: lint
+    runs-on: actions-runners
+    steps:
+      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5
+        with:
+          go-version: stable
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@051d91933864810ecd5e2ea2cfd98f6a5bca5347 # v6
+        with:
+          version: latest
+          args: --timeout 3m0s

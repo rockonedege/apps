@@ -1,34 +1,38 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: home-automation
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "2022.2.5"
+appVersion: 2025.2.2
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
-- condition: postgresql.enabled
-  name: postgresql
-  repository: https://truecharts.org/
-  version: 6.0.68
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
 deprecated: false
-description: home-assistant App for TrueNAS SCALE
-home: https://github.com/truecharts/apps/tree/master/charts/stable/home-assistant
-icon: https://truecharts.org/_static/img/appicons/home-assistant-icon.png
+description: Open source home automation that puts local control and privacy first.
+home: https://truecharts.org/charts/stable/home-assistant
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/home-assistant.webp
 keywords:
-- home-assistant
-- hass
-- homeassistant
-kubeVersion: '>=1.16.0-0'
+  - home-assistant
+  - home-automation
+  - hass
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: home-assistant
 sources:
-- https://github.com/home-assistant/home-assistant
-- https://github.com/cdr/code-server
+  - https://github.com/cdr/code-server
+  - https://github.com/home-assistant/home-assistant
+  - https://github.com/truecharts/charts/tree/master/charts/stable/home-assistant
+  - https://hub.docker.com/r/homeassistant/home-assistant
 type: application
-version: 12.0.43
-annotations:
-  truecharts.org/catagories: |
-    - home-automation
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+version: 27.2.2

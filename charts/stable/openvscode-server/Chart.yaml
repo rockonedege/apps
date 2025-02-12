@@ -1,28 +1,34 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: incubator
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-kubeVersion: ">=1.16.0-0"
-name: openvscode-server
-version: 0.0.26
-appVersion: "1.64.0"
-description: Openvscode-server provides a version of VS Code that runs a server on a remote machine.
-type: application
+appVersion: 1.96.4
+dependencies:
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
 deprecated: false
-home: https://github.com/truecharts/apps/tree/master/charts/stable/openvscode-server
-icon: https://truecharts.org/_static/img/appicons/openvscode-server-icon.png
+description: Openvscode-server provides a version of VS Code that runs a server on a remote machine.
+home: https://truecharts.org/charts/stable/openvscode-server
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/openvscode-server.webp
 keywords:
   - openvscode-server
-sources:
-  - https://hub.docker.com/r/linuxserver/openvscode-server
-dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
-  # condition:
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
-annotations:
-  truecharts.org/catagories: |
-    - incubator
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
+name: openvscode-server
+sources:
+  - https://ghcr.io/linuxserver/openvscode-server
+  - https://github.com/truecharts/charts/tree/master/charts/stable/openvscode-server
+type: application
+version: 11.12.3

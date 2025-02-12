@@ -1,52 +1,57 @@
 image:
-  # -- Image to deploy.
-  repository: tccr.io/truecharts/unifi-poller
-  # -- Image [k8s pull policy](https://kubernetes.io/docs/concepts/containers/images/#updating-images).
+  repository: ghcr.io/unpoller/unpoller
   pullPolicy: IfNotPresent
-  # -- Image tag to deploy.
-  tag: v2.1.3@sha256:2d6cd1f4cdc3d8522d697830f69ca12aa2fe24fda4e5476610af6e0b5c0597e9
-
-
-# -- Environment variable configuration options for unifi-poller ([docs](https://unifipoller.com/docs/install/configuration)).
-#    Note: a [configuration file](https://github.com/unifi-poller/unifi-poller/blob/master/examples/up.conf.example) is also supported.
-env:
-  # TZ: UTC
-  # UP_UNIFI_DEFAULT_URL: "https://127.0.0.1:8443"
-  # UP_UNIFI_DEFAULT_USER: "unifipoller"
-  # UP_UNIFI_DEFAULT_PASS: "unifipoller"
-  UP_PROMETHEUS_DISABLE: false
-
+  tag: v2.14.1@sha256:9ba73b1793ef332ae9b4b719ef0fc09f231d6276bc7b721cbb47961ed7792961
 service:
   main:
     ports:
       main:
-        enabled: false
-      metrics:
-        enabled: true
         port: 9130
-
 metrics:
-  # -- Enable and configure a Prometheus serviceMonitor for the chart under this key.
-  # @default -- See values.yaml
-  enabled: false
-  serviceMonitor:
-    interval: 1m
-    scrapeTimeout: 30s
-    labels: {}
-  # -- Enable and configure Prometheus Rules for the chart under this key.
-  # @default -- See values.yaml
-  prometheusRule:
+  main:
+    enabled: true
+    type: "servicemonitor"
+    endpoints:
+      - port: main
+        path: /metrics
+    prometheusRule:
+      enabled: false
+portal:
+  open:
     enabled: false
-    labels: {}
-    # -- Configure additionial rules for the chart under this key.
-    # @default -- See prometheusrules.yaml
-    rules: []
-      # - alert: UnifiPollerAbsent
-      #   annotations:
-      #     description: Unifi Poller has disappeared from Prometheus service discovery.
-      #     summary: Unifi Poller is down.
-      #   expr: |
-      #     absent(up{job=~".*unifi-poller.*"} == 1)
-      #   for: 5m
-      #   labels:
-      #     severity: critical
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              path: /
+            readiness:
+              path: /
+            startup:
+              path: /
+          env:
+            # UP_UNIFI_DEFAULT_URL: "https://127.0.0.1:8443"
+            # UP_UNIFI_DEFAULT_USER: "unifipoller"
+            # UP_UNIFI_DEFAULT_PASS: "unifipoller"
+            UP_PROMETHEUS_DISABLE: false
+
+configmap:
+  dashboards:
+    enabled: true
+    labels:
+      grafana_dashboard: "1"
+    data:
+      upUAP.json: >-
+        {{ .Files.Get "dashboards/UAP.json" | indent 8 }}
+      upclients.json: >-
+        {{ .Files.Get "dashboards/clients.json" | indent 8 }}
+      upUSW.json: >-
+        {{ .Files.Get "dashboards/USW.json" | indent 8 }}
+      upnetwork.json: >-
+        {{ .Files.Get "dashboards/network.json" | indent 8 }}
+      upUSG.json: >-
+        {{ .Files.Get "dashboards/USG.json" | indent 8 }}
+      upDPI.json: >-
+        {{ .Files.Get "dashboards/DPI.json" | indent 8 }}

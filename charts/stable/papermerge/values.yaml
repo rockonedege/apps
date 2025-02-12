@@ -1,40 +1,54 @@
 image:
-  repository: tccr.io/truecharts/papermerge
+  repository: docker.io/papermerge/papermerge
   pullPolicy: IfNotPresent
-  tag: v2.0.1
-
+  tag: 3.3.1@sha256:cb8abec5392d87ee95a7427f6b9ed9fd76bc7db2150f6fa58aaceff98e975321
 securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-
-envValueFrom:
-  REDIS_URL:
-    secretKeyRef:
-      name: rediscreds
-      key: url
-
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
-        targetPort: 8000
-        port: 10141
-
+        targetPort: 80
+        port: 12000
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            PAPERMERGE__SECURITY__SECRET_KEY:
+              secretKeyRef:
+                name: papermerge-secrets
+                key: PAPERMERGE__SECURITY__SECRET_KEY
+            PAPERMERGE__AUTH__USERNAME: admin
+            PAPERMERGE__AUTH__PASSWORD: admin
+            PAPERMERGE__DATABASE__URL: '{{ printf "postgresql://%s:%s@%s:5432/%s" .Values.cnpg.main.user .Values.cnpg.main.creds.password .Values.cnpg.main.creds.host .Values.cnpg.main.database }}'
+            PAPERMERGE__REDIS__URL:
+              secretKeyRef:
+                expandObjectName: false
+                name: '{{ printf "%s-%s" .Release.Name "rediscreds" }}'
+                key: url
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
-  varrun:
+    mountPath: "/core_app/index_db"
+  media:
     enabled: true
-
+    mountPath: "/core_app/media"
+  varrun:
+    enabled: false
 redis:
   enabled: true
-  existingSecret: "rediscreds"
   redisUsername: papermerge
+cnpg:
+  main:
+    enabled: true
+    user: papermerge
+    database: papermerge
+portal:
+  open:
+    enabled: true

@@ -1,0 +1,33 @@
+image:
+  pullPolicy: IfNotPresent
+  repository: quay.io/sinusbot/docker
+  tag: latest@sha256:225e1f06c140f0bca7a1e18c6f6690057d47444a483376437d67745fe771eb21
+persistence:
+  data:
+    enabled: true
+    mountPath: /opt/sinusbot/data
+  scriptspath:
+    enabled: true
+    mountPath: /opt/sinusbot/scripts
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsGroup: 0
+    runAsUser: 0
+service:
+  main:
+    ports:
+      main:
+        port: 8087
+        protocol: tcp
+        targetPort: 8087
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            OVERRIDE_PASSWORD: foobar

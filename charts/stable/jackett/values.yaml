@@ -1,33 +1,30 @@
 image:
-  repository: tccr.io/truecharts/jackett
+  repository: ghcr.io/elfhosted/jackett
   pullPolicy: IfNotPresent
-  tag: v0.20.539@sha256:7ba8deee70d06a1b78e3702915146a37c0528f5d41f3c7a4f633512e5b581c6f
-
-securityContext:
-  readOnlyRootFilesystem: false
-
+  tag: 0.22.1411@sha256:5725f4e9d7278f5145d644e9abdf677aba2544c28b9a10dbc5430916f42488f9
 service:
   main:
-    protocol: HTTP
     ports:
       main:
+        protocol: http
         targetPort: 9117
         port: 9117
-
-probes:
-  liveness:
-    path: "/UI/Login"
-
-  readiness:
-    path: "/UI/Login"
-
-  startup:
-    path: "/UI/Login"
-
-env: {}
-  # TZ: UTC
-  # PUID: 1001
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              path: "/health"
+            readiness:
+              path: "/health"
+            startup:
+              path: "/health"
 persistence:
   config:
     enabled: true
     mountPath: "/config"
+portal:
+  open:
+    enabled: true

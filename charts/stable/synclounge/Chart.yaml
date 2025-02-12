@@ -1,28 +1,34 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: media
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-kubeVersion: ">=1.16.0-0"
-name: synclounge
-version: 0.0.22
-appVersion: "5.1.112"
-description: Synclounge is a third party tool that allows you to watch Plex in sync with your friends/family, wherever you are.
-type: application
+appVersion: 5.2.35
+dependencies:
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
 deprecated: false
-home: https://github.com/truecharts/apps/tree/master/charts/stable/synclounge
-icon: https://truecharts.org/_static/img/appicons/synclounge-icon.png
+description: Synclounge is a third party tool that allows you to watch Plex in sync with your friends/family, wherever you are.
+home: https://truecharts.org/charts/stable/synclounge
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/synclounge.webp
 keywords:
   - synclounge
-sources:
-  - https://hub.docker.com/r/linuxserver/synclounge
-dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
-  # condition:
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
-annotations:
-  truecharts.org/catagories: |
-    - incubator
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
+name: synclounge
+sources:
+  - https://ghcr.io/linuxserver/synclounge
+  - https://github.com/truecharts/charts/tree/master/charts/stable/synclounge
+type: application
+version: 11.5.4

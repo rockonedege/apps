@@ -1,28 +1,36 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: monitoring
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "1.11.4"
+appVersion: 1.23.16
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
 deprecated: false
 description: A fancy self-hosted monitoring tool
-home: https://github.com/louislam/uptime-kuma
-icon: https://truecharts.org/_static/img/appicons/uptime-kuma-icon.png
+home: https://truecharts.org/charts/stable/uptime-kuma
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/uptime-kuma.webp
 keywords:
-- monitoring
-- uptime
-kubeVersion: '>=1.16.0-0'
+  - monitoring
+  - uptime
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: uptime-kuma
 sources:
-- https://github.com/louislam/uptime-kuma
+  - https://github.com/louislam/uptime-kuma
+  - https://github.com/truecharts/charts/tree/master/charts/stable/uptime-kuma
+  - https://hub.docker.com/r/louislam/uptime-kuma
 type: application
-version: 1.0.42
-annotations:
-  truecharts.org/catagories: |
-    - monitoring
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+version: 12.5.1

@@ -1,23 +1,31 @@
 image:
-  repository: tccr.io/truecharts/navidrome
+  repository: docker.io/deluan/navidrome
   pullPolicy: IfNotPresent
-  tag: v0.47.5@sha256:a7e6b081e2a2ffc86eda6f98eeae5b690235e78611a243ab3c8f576b716378d6
-
+  tag: 0.54.4@sha256:5c15cb7792c8e0b3a3bed212609c2072ba70bbff91e6ddff651ba2829101d4c1
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            ND_MUSICFOLDER: /music
+            ND_SCANSCHEDULE: "@every 15m"
+            ND_LOGLEVEL: info
+            ND_SESSIONTIMEOUT: 24h
+            ND_ENABLETRANSCODINGCONFIG: false
 service:
   main:
     ports:
       main:
         port: 4533
         targetPort: 4533
-
-env:
-  ND_SCANINTERVAL: "15m"
-  ND_LOGLEVEL: "info"
-  ND_SESSIONTIMEOUT: "24h"
-  ND_ENABLETRANSCODINGCONFIG: "true"
-  ND_MUSICFOLDER: "/music"
-
 persistence:
   data:
     enabled: true
-    mountPath: "/data"
+    mountPath: /data
+  music:
+    enabled: true
+    mountPath: /music
+portal:
+  open:
+    enabled: true

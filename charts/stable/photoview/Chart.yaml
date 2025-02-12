@@ -1,31 +1,36 @@
+annotations:
+  max_scale_version: 24.04.1
+  min_scale_version: 24.04.0
+  truecharts.org/category: media
+  truecharts.org/max_helm_version: "3.15"
+  truecharts.org/min_helm_version: "3.11"
+  truecharts.org/train: stable
 apiVersion: v2
-appVersion: "2.3.12"
+appVersion: 2.4.0
 dependencies:
-- name: common
-  repository: https://truecharts.org
-  version: 8.15.4
-- condition: postgresql.enabled
-  name: postgresql
-  repository: https://truecharts.org/
-  version: 6.0.68
+  - name: common
+    version: 25.4.10
+    repository: oci://tccr.io/truecharts
+    condition: ""
+    alias: ""
+    tags: []
+    import-values: []
+deprecated: false
 description: Photoview is a simple and user-friendly photo gallery.
-home: https://github.com/truecharts/apps/tree/master/charts/stable/photoview
-icon: https://truecharts.org/_static/img/appicons/photoview-icon.png
+home: https://truecharts.org/charts/stable/photoview
+icon: https://truecharts.org/img/hotlink-ok/chart-icons/photoview.webp
 keywords:
-- photo
-- gallery
-kubeVersion: '>=1.16.0-0'
+  - photo
+  - gallery
+kubeVersion: '>=1.24.0-0'
 maintainers:
-- email: info@truecharts.org
-  name: TrueCharts
-  url: https://truecharts.org
+  - name: TrueCharts
+    email: info@truecharts.org
+    url: https://truecharts.org
 name: photoview
 sources:
-- https://github.com/photoview/photoview
-- https://hub.docker.com/r/viktorstrate/photoview
-version: 1.0.1
-annotations:
-  truecharts.org/catagories: |
-    - media
-  truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U
+  - https://github.com/photoview/photoview
+  - https://github.com/truecharts/charts/tree/master/charts/stable/photoview
+  - https://hub.docker.com/r/viktorstrate/photoview
+type: application
+version: 15.6.1

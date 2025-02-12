@@ -1,50 +1,71 @@
 image:
-  repository: tccr.io/truecharts/ipfs
+  repository: docker.io/ipfs/kubo
   pullPolicy: IfNotPresent
-  tag: v2.14.0
-
-securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-
+  tag: v0.33.1@sha256:0c704e9e9bff6ca937ca170ab1f221fae317807863121904277cd971f5cae4d6
 service:
   main:
     ports:
       main:
-        targetPort: 80
         port: 10125
-  peer:
+        targetPort: 5001
+  peer-tcp:
     enabled: true
     ports:
-      peer:
+      peer-tcp:
         enabled: true
         targetPort: 4001
         port: 4001
-  api:
+  peer-udp:
     enabled: true
     ports:
-      api:
+      peer-udp:
+        protocol: udp
         enabled: true
-        targetPort: 5001
-        port: 5001
+        targetPort: 4001
+        port: 4001
   gateway:
     enabled: true
+    type: ClusterIP
     ports:
       gateway:
         enabled: true
         targetPort: 8080
         port: 10147
-
 persistence:
-  config:
+  data:
     enabled: true
-    mountPath: "/config"
-  varrun:
+    mountPath: "/data/ipfs"
+  staging:
     enabled: true
+    mountPath: "/export"
+  ipfs:
+    enabled: true
+    mountPath: "/ipfs"
+  ipns:
+    enabled: true
+    mountPath: "/ipns"
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              path: "/webui"
+            readiness:
+              path: "/webui"
+            startup:
+              path: "/webui"
+          env:
+            IPFS_PROFILE: "server"
+            IPFS_SWARM_KEY: ""
+            IPFS_SWARM_KEY_FILE: ""

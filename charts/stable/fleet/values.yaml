@@ -1,34 +1,38 @@
 image:
-  repository: tccr.io/truecharts/fleet
+  repository: ghcr.io/linuxserver/fleet
   pullPolicy: IfNotPresent
-  tag: v2.3.2
-
+  tag: 2.3.3@sha256:db1c00bb31e13fcac9508b1760a770e4486b35c7ca2ed380ca8774b2a17f4627
 securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-secret:
-  # fleet_admin_secret: ""  (Optional)
-
-env:
-  PUID: 568
-  fleet_admin_authentication_type: DATABASE
-  fleet_database_username: fleet
-
-envValueFrom:
-  fleet_database_url:
-    secretKeyRef:
-      name: mariadbcreds
-      key: jdbc-mariadb
-  fleet_database_password:
-    secretKeyRef:
-      name: mariadbcreds
-      key: mariadb-password
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
+          env:
+            fleet_admin_authentication_type: DATABASE
+            fleet_database_username: fleet
+            fleet_database_url:
+              secretKeyRef:
+                expandObjectName: false
+                name: '{{ printf "%s-%s" .Release.Name "mariadbcreds" }}'
+                key: jdbc-mariadb
+            fleet_database_password: "{{ .Values.mariadb.password }}"
+# secretEnv:
 
 service:
   main:
@@ -36,16 +40,17 @@ service:
       main:
         targetPort: 8080
         port: 10145
-
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
+    mountPath: /config
   varrun:
     enabled: true
-
 mariadb:
   enabled: true
+  includeCommon: true
   mariadbUsername: fleet
   mariadbDatabase: fleet
-  existingSecret: "mariadbcreds"
+portal:
+  open:
+    enabled: true

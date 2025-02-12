@@ -1,60 +1,71 @@
 image:
-  repository: tccr.io/truecharts/airsonic-advanced
-  tag: v11.0.0@sha256:b6a1b30ecc3e16c39ca56392cd13d55af80235b57ec2d27c2e5f1a21fec34bd9
+  repository: docker.io/airsonicadvanced/airsonic-advanced
+  tag: edge-latest@sha256:d0c2d546245f14242f534617aa0c8d17fd6ab96e1df86e5524e139c04431f3fa
   pullPolicy: IfNotPresent
 
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-env:
-  PUID: 568
-  TZ: UTC
-  AIRSONIC_DIR: "/"
-  # -- For passing additional java options. For some reverse proxies, you may need to pass `JAVA_OPTS=-Dserver.use-forward-headers=true` for airsonic to generate the proper URL schemes.
-  JAVA_OPTS:
-  CONTEXT_PATH: "/"
-  spring_liquibase_parameters_userTableQuote: '"'
-  spring_datasource_username: "{{ .Values.postgresql.postgresqlUsername }}"
-
-envValueFrom:
-  spring_datasource_url:
-    secretKeyRef:
-      name: dbcreds
-      key: jdbc
-  spring_datasource_password:
-    secretKeyRef:
-      name: dbcreds
-      key: postgresql-password
+  container:
+    readOnlyRootFilesystem: false
 
 service:
   main:
     ports:
       main:
         port: 10122
-        targetPort: 4040
+        protocol: http
+
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: tcp
+            readiness:
+              type: tcp
+            startup:
+              type: tcp
+          env:
+            AIRSONIC_PORT: "{{ .Values.service.main.ports.main.port }}"
+            # dont expose to GUI
+            CONTEXT_PATH: "/"
+            # Set so the persisted dirs use the root path
+            AIRSONIC_DIR: "/"
+            # -- For passing additional java options. For some reverse proxies, you may need to pass `JAVA_OPTS=-Dserver.use-forward-headers=true` for airsonic to generate the proper URL schemes.
+            JAVA_OPTS: ""
+            spring_liquibase_parameters_userTableQuote: '"'
+            spring_datasource_username: "{{ .Values.cnpg.main.user }}"
+            spring_datasource_url:
+              secretKeyRef:
+                name: cnpg-main-urls
+                key: jdbc
+            spring_datasource_password:
+              secretKeyRef:
+                name: cnpg-main-user
+                key: password
 
 # Enabled postgres
-postgresql:
-  enabled: true
-  existingSecret: "dbcreds"
-  postgresqlUsername: airsonic-advanced
-  postgresqlDatabase: airsonic-advanced
+cnpg:
+  main:
+    enabled: true
+    user: airsonic-advanced
+    database: airsonic-advanced
 
 persistence:
   config:
     enabled: true
-    mountPath: "/airsonic"
+    mountPath: /airsonic
   music:
     enabled: true
-    mountPath: "/music"
+    mountPath: /music
   podcasts:
     enabled: true
-    mountPath: "/podcasts"
+    mountPath: /podcasts
   playlists:
     enabled: true
-    mountPath: "/playlists"
+    mountPath: /playlists
+
+portal:
+  open:
+    enabled: true

@@ -1,60 +1,7 @@
 image:
-  repository: tccr.io/truecharts/zwavejs2mqtt
+  repository: docker.io/zwavejs/zwave-js-ui
   pullPolicy: IfNotPresent
-  tag: v6.5.1@sha256:cd588fec817637b2b780ad64d432d3cb7ad27e26014bdff4a39f75d096f11911
-
-securityContext:
-  readOnlyRootFilesystem: false
-
-# # See more environment variables in the zwavejs2mqtt documentation
-# https://zwave-js.github.io/zwavejs2mqtt/#/guide/env-vars
-env: {}
-  # OZW_NETWORK_KEY:
-
-probes:
-  liveness:
-    enabled: true
-    # custom: true
-    # spec:
-    #   failureThreshold: 5
-    #   httpGet:
-    #     path: /health
-    #     port: http
-    #     httpHeaders:
-    #       - name: Accept
-    #         value: text/plain
-    #   initialDelaySeconds: 30
-    #   periodSeconds: 10
-    #   timeoutSeconds: 10
-  readiness:
-    enabled: true
-    # custom: true
-    # spec:
-    #   failureThreshold: 5
-    #   httpGet:
-    #     path: /health
-    #     port: http
-    #     httpHeaders:
-    #       - name: Accept
-    #         value: text/plain
-    #   initialDelaySeconds: 30
-    #   periodSeconds: 10
-    #   timeoutSeconds: 10
-  startup:
-    enabled: false
-    # custom: true
-    # spec:
-    #   failureThreshold: 5
-    #   httpGet:
-    #     path: /health
-    #     port: http
-    #     httpHeaders:
-    #       - name: Accept
-    #         value: text/plain
-    #   initialDelaySeconds: 30
-    #   periodSeconds: 10
-    #   timeoutSeconds: 10
-
+  tag: 9.30.1@sha256:69966e5a4bf1a6c52cb8b1c15037471a47cd07ae4fcdf24bf807019bba9ce2ee
 service:
   main:
     ports:
@@ -68,19 +15,62 @@ service:
         enabled: true
         port: 10046
         targetPort: 3000
-
 persistence:
   config:
     enabled: true
     mountPath: "/usr/src/app/store"
 
-
-# affinity:
-#   nodeAffinity:
-#     requiredDuringSchedulingIgnoredDuringExecution:
-#       nodeSelectorTerms:
-#       - matchExpressions:
-#         - key: app
-#           operator: In
-#           values:
-#           - zwave-controller
+portal:
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: true
+              # custom: true
+              # spec:
+              #   failureThreshold: 5
+              #   httpGet:
+              #     path: /health
+              #     port: http
+              #     httpHeaders:
+              #       - name: Accept
+              #         value: text/plain
+              #   initialDelaySeconds: 30
+              #   periodSeconds: 10
+              #   timeoutSeconds: 10
+            readiness:
+              enabled: true
+              # custom: true
+              # spec:
+              #   failureThreshold: 5
+              #   httpGet:
+              #     path: /health
+              #     port: http
+              #     httpHeaders:
+              #       - name: Accept
+              #         value: text/plain
+              #   initialDelaySeconds: 30
+              #   periodSeconds: 10
+              #   timeoutSeconds: 10
+            startup:
+              enabled: false
+              # custom: true
+              # spec:
+              #   failureThreshold: 5
+              #   httpGet:
+              #     path: /health
+              #     port: http
+              #     httpHeaders:
+              #       - name: Accept
+              #         value: text/plain
+              #   initialDelaySeconds: 30
+              #   periodSeconds: 10
+              #   timeoutSeconds: 10

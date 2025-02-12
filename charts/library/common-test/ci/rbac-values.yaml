@@ -1,64 +1,109 @@
-image:
-  repository: ghcr.io/truecharts/whoami
-  pullPolicy: IfNotPresent
-  tag: v1.7.1@sha256:9140a27e94fdfa538f4c7f95e4c2c6910341e21aa0e2f2703718fcfdf0cc825a
-
 service:
   main:
+    enabled: true
+    primary: true
     ports:
       main:
+        enabled: true
+        primary: true
+        protocol: http
         port: 8080
 
-args:
-  - --port
-  - '8080'
+workload:
+  main:
+    enabled: true
+    primary: true
+    type: Deployment
+    podSpec:
+      containers:
+        main:
+          enabled: true
+          primary: true
+          args:
+            - --port
+            - "8080"
+          probes:
+            liveness:
+              enabled: true
+              type: http
+              port: "{{ .Values.service.main.ports.main.port }}"
+            readiness:
+              enabled: true
+              type: http
+              port: "{{ .Values.service.main.ports.main.port }}"
+            startup:
+              enabled: true
+              type: http
+              port: "{{ .Values.service.main.ports.main.port }}"
+  workload2:
+    enabled: true
+    primary: false
+    type: Deployment
+    podSpec:
+      containers:
+        main:
+          enabled: true
+          primary: true
+          args:
+            - --port
+            - "8080"
+          probes:
+            liveness:
+              enabled: true
+              type: http
+              port: "{{ .Values.service.main.ports.main.port }}"
+            readiness:
+              enabled: true
+              type: http
+              port: "{{ .Values.service.main.ports.main.port }}"
+            startup:
+              enabled: true
+              type: http
+              port: "{{ .Values.service.main.ports.main.port }}"
 
 rbac:
-  enabled: true
-  rules:
-    - apiGroups:
-        - ""
-      resources:
-        - services
-        - endpoints
-        - secrets
-      verbs:
-        - get
-        - list
-        - watch
-    - apiGroups:
-        - extensions
-        - networking.k8s.io
-      resources:
-        - ingresses
-        - ingressclasses
-      verbs:
-        - get
-        - list
-        - watch
-    - apiGroups:
-        - extensions
-        - networking.k8s.io
-      resources:
-        - ingresses/status
-      verbs:
-        - update
-    - apiGroups:
-        - traefik.containo.us
-      resources:
-        - ingressroutes
-        - ingressroutetcps
-        - ingressrouteudps
-        - middlewares
-        - middlewaretcps
-        - tlsoptions
-        - tlsstores
-        - traefikservices
-        - serverstransports
-      verbs:
-        - get
-        - list
-        - watch
+  main:
+    enabled: true
+    primary: true
+    clusterWide: true
+    allServiceAccounts: true
+    labels:
+      key: value
+      key1: value1
+    annotations:
+      key: value
+      key1: value1
+    rules:
+      - apiGroups:
+          - ""
+        resources:
+          - services
+          - endpoints
+          - secrets
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups:
+          - ""
+        resources:
+          - pods
+        verbs:
+          - get
+          - list
+          - watch
 
 serviceAccount:
-  create: true
+  sa-name:
+    enabled: true
+    primary: true
+    labels:
+      key: value
+      key2: value
+    annotations:
+      key: value
+      key2: value
+  other-sa-name:
+    enabled: true
+    targetSelector:
+      - workload2
